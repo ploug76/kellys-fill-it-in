@@ -47,7 +47,7 @@ body.smp .smpnote{display:block}
 /* play */
 #sPlay .hdr{position:sticky;top:0;z-index:5;background:#2a1036;box-shadow:0 4px 10px rgba(0,0,0,.4);padding-top:calc(8px + env(safe-area-inset-top));margin-top:calc(-1 * env(safe-area-inset-top))}
 #pTitle{font-size:20px}#timer{font-size:20px;font-weight:bold;color:#7ffcf0;min-width:64px;text-align:right}
-#gridWrap{display:flex;justify-content:center;padding:8px 4px 4px}
+#gridWrap{display:flex;justify-content:center;padding:8px 4px 4px;scroll-margin-top:calc(70px + env(safe-area-inset-top))}
 #grid{display:grid;position:relative;touch-action:manipulation;user-select:none;-webkit-user-select:none}
 .cell{display:flex;align-items:center;justify-content:center;font-family:"Arial Black","Trebuchet MS",sans-serif;font-weight:bold;color:#2a1036}
 .cell.on{background:#fff8ec;box-shadow:inset 0 0 0 1.5px #6b4a2b;cursor:pointer}
@@ -84,7 +84,7 @@ body.sheet #sPlay{padding-bottom:48vh}
 .card .stars{font-size:48px;color:#ffd36b;letter-spacing:6px;margin:6px 0}.card .stars .e{color:#5d5070}
 .card .stat{font-size:21px;margin:4px 0}
 .card .col{margin-top:14px}
-#confetti{position:fixed;inset:0;pointer-events:none;z-index:31;display:none}
+#confetti{position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:31;display:none}
 /* sample/leaderboard/dock text size overrides: 16px minimum */
 #dockHint,#dockHint.smpc,#smpBuy,#shareToast{font-size:16px!important}
 #smpLock p{font-size:18px!important}#smpLock .lnk{font-size:17px!important;padding:12px 0;min-height:48px;box-sizing:border-box}
@@ -198,9 +198,11 @@ function saveProg(){if(!G||G.won)return;save.prog[key(G.t,G.i)]={pl:G.pl,lock:[.
 function letters(except=-1){const L={};G.slots.forEach((s,si)=>{if(si===except||!G.pl[si])return;const w=G.pl[si];s.cells.forEach(([x,y],k)=>L[ck(x,y)]=w[k])});return L}
 function fits(w,si){const s=G.slots[si];if(w.length!==s.len)return false;const L=letters(si);return s.cells.every(([x,y],k)=>!L[ck(x,y)]||L[ck(x,y)]===w[k])}
 function slotOf(w){return G.pl.indexOf(w)}
+// hint words always stay; drop any older placement that now clashes with them
+function keepHints(){const hw=new Set();G.lock.forEach(si=>{G.pl[si]=G.slots[si].w;hw.add(G.slots[si].w)});G.pl.forEach((w,si)=>{if(w&&!G.lock.has(si)&&(hw.has(w)||!fits(w,si)))G.pl[si]=null})}
 function snapshot(){G.undo.push(G.pl.slice());if(G.undo.length>200)G.undo.shift()}
 let cs=44;
-function buildGrid(){const g=$('grid');const vw=Math.min(innerWidth,640);cs=Math.max(44,Math.min(66,Math.floor((vw-8)/G.W)));
+function buildGrid(){const g=$('grid');const vw=Math.min(innerWidth,640);cs=Math.max(44,Math.min(66,Math.floor((vw-8)/G.W),Math.floor((innerHeight-172)/G.H)));  // fit width, and height between the header and the placing bar
  g.style.gridTemplateColumns=`repeat(${G.W},${cs}px)`;g.style.gridTemplateRows=`repeat(${G.H},${cs}px)`;g.style.fontSize=Math.round(cs*.6)+'px';
  let h='';for(let y=0;y<G.H;y++)for(let x=0;x<G.W;x++){const on=!!G.cellSlots[ck(x,y)];h+=`<div class="cell${on?' on':''}" data-x="${x}" data-y="${y}"${on?' role="gridcell"':''}></div>`}g.innerHTML=h}
 addEventListener('resize',()=>{if(G&&(state==='play'||state==='result')){buildGrid();render()}});
@@ -222,7 +224,12 @@ $('words').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b|
  if(si>=0&&G.lock.has(si)){msg('That one is a hint word. It stays put.',2500);S.no();return}
  S.tap();closeSheet(false);G.selSlot=null;
  if(G.pick===w){G.pick=null;render();msg('');return}
- G.pick=w;render();msg('');showPickBar();$('gridWrap').scrollIntoView({behavior:'smooth',block:'start'})});
+ G.pick=w;render();msg('');showPickBar();requestAnimationFrame(showGrid)});
+// bring the grid into view just below the sticky header (never under it); skip if it is already fully visible
+function showGrid(){const hb=document.querySelector('#sPlay .hdr').getBoundingClientRect().bottom,g=$('grid').getBoundingClientRect(),sh=$('sheet');
+ const tip=sh.querySelector('.tip');if(tip&&sh.classList.contains('on')&&g.height>sh.getBoundingClientRect().top-hb-10)tip.remove(); // short screens: one-line bar so the whole grid fits
+ const sb=sh.classList.contains('on')?sh.getBoundingClientRect().top:innerHeight;
+ if(g.top>=hb+2&&g.bottom<=sb-2)return;const dy=g.top-hb-8;if(Math.abs(dy)>1)window.scrollBy({top:dy,behavior:'smooth'})}
 $('grid').addEventListener('click',e=>{const c=e.target.closest('.cell.on');if(!c||!G||G.won)return;const x=+c.dataset.x,y=+c.dataset.y,k=ck(x,y);const here=G.cellSlots[k].map(a=>a[0]);
  if(G.pick){const w=G.pick;let cand=here.filter(si=>G.slots[si].len===w.length&&!G.lock.has(si));
   if(!cand.length){S.no();msg(`${w} has ${w.length} letters. Pick a ${w.length}-letter row or column.`,3500);return}
@@ -251,11 +258,11 @@ function openSheet(si){const s=G.slots[si],L=letters(si);const pat=s.cells.map((
  // keep the chosen slot visible above the sheet
  requestAnimationFrame(()=>{const r=s.cells.map(([x,y])=>cellEl(x,y).getBoundingClientRect());const bot=Math.max(...r.map(q=>q.bottom)),top=Math.min(...r.map(q=>q.top));const st=$('sheet').getBoundingClientRect().top;
   if(bot>st-8)window.scrollBy({top:Math.min(bot-st+16,top-70),behavior:'smooth'})})}
-function showPickBar(){const w=G.pick;$('sheet').innerHTML=`<div class="top"><span class="t">Placing <b style="color:#ffd36b">${w}</b>: tap its first square.<br><span style="font-size:17px;color:#7ffcf0">Blue squares are ${w.length}-letter spots.</span></span><button class="icb" type="button" id="shX" aria-label="Cancel">✕</button></div>`;
+function showPickBar(){const w=G.pick;$('sheet').innerHTML=`<div class="top"><span class="t">Placing <b style="color:#ffd36b">${w}</b>: tap its first square.<span class="tip"><br><span style="font-size:17px;color:#7ffcf0">Blue squares are ${w.length}-letter spots.</span></span></span><button class="icb" type="button" id="shX" aria-label="Cancel">✕</button></div>`;
  $('sheet').classList.add('on');document.body.classList.add('sheet');$('shX').onclick=()=>{S.tap();G.pick=null;closeSheet();render();msg('')}}
 function closeSheet(clear=true){$('sheet').classList.remove('on');document.body.classList.remove('sheet');if(clear&&G){G.selSlot=null;if(state==='play')render()}}
 /* tools */
-$('bUndo').onclick=()=>{if(!G||G.won||!G.undo.length)return;G.pl=G.undo.pop();G.lock.forEach(si=>G.pl[si]=G.slots[si].w);G.pick=null;G.selSlot=null;closeSheet(false);S.undo();render();msg('Undone.',1500);saveProg()};
+$('bUndo').onclick=()=>{if(!G||G.won||!G.undo.length)return;G.pl=G.undo.pop();keepHints();G.pick=null;G.selSlot=null;closeSheet(false);S.undo();render();msg('Undone.',1500);saveProg()};
 $('bClear').onclick=()=>{if(!G||G.won)return;S.tap();$('ovClear').classList.add('on')};
 $('bClearYes').onclick=()=>{$('ovClear').classList.remove('on');snapshot();G.pl=G.pl.map((w,si)=>G.lock.has(si)?w:null);G.pick=null;G.selSlot=null;closeSheet(false);S.undo();render();msg('Puzzle cleared. Fresh start!',2500);saveProg()};
 $('bCheck').onclick=()=>{if(!G||G.won)return;G.checks++;const bad=[],good=[];G.slots.forEach((s,si)=>{if(!G.pl[si])return;(G.pl[si]===s.w?good:bad).push(si)});
@@ -265,11 +272,12 @@ $('bCheck').onclick=()=>{if(!G||G.won)return;G.checks++;const bad=[],good=[];G.s
 $('bHint').onclick=()=>{if(!G||G.won)return;const open=G.slots.map((s,si)=>si).filter(si=>!G.lock.has(si)&&G.pl[si]!==G.slots[si].w);if(!open.length)return;
  // prefer a word that is not on the grid yet, then the longest
  open.sort((a,b)=>(slotOf(G.slots[a].w)<0?0:1)-(slotOf(G.slots[b].w)<0?0:1)||G.slots[b].len-G.slots[a].len);const si=open[0],w=G.slots[si].w;
- const o=slotOf(w);if(o>=0)G.pl[o]=null;G.pl[si]=w;G.lock.add(si);G.hints++;
+ const o=slotOf(w);if(o>=0)G.pl[o]=null;const prev=G.pl[si];G.pl[si]=w;G.lock.add(si);G.hints++;
  // anything that now clashes comes off the grid
- let moved=[];G.slots.forEach((s,sj)=>{if(sj===si||!G.pl[sj]||G.lock.has(sj))return;if(!fits(G.pl[sj],sj)){moved.push(G.pl[sj]);G.pl[sj]=null}});
- G.undo=[];G.pick=null;G.selSlot=null;closeSheet(false);S.hint();render();flash(G.slots[si].cells,'good');
- msg(`Hint: ${w} is in.`+(moved.length?` (${moved.join(', ')} came off.)`:''),3500);saveProg();checkDone()};
+ let moved=prev&&prev!==w?[prev]:[];G.slots.forEach((s,sj)=>{if(sj===si||!G.pl[sj]||G.lock.has(sj))return;if(!fits(G.pl[sj],sj)){moved.push(G.pl[sj]);G.pl[sj]=null}});
+ G.pick=null;G.selSlot=null;closeSheet(false);S.hint();render();flash(G.slots[si].cells,'good');
+ const ls=a=>a.length<2?a[0]:a.slice(0,-1).join(', ')+' and '+a[a.length-1];
+ msg(`Hint: ${w} is in.`+(moved.length?` ${ls(moved)} went back to the list.`:''),4500);saveProg();checkDone()};
 $('bBack').onclick=()=>{S.tap();saveProg();showLevels(G.t)};
 /* timer */
 setInterval(()=>{if(state==='play'&&G&&!G.won&&!document.hidden){G.secs++;$('timer').textContent=fmtT(G.secs);if(G.secs%5===0)saveProg()}},1000);
@@ -279,7 +287,7 @@ function scoreFor(st,secs){return st*100+Math.max(0,300-Math.floor(secs/2))}
 function totalScore(){return Object.values(save.best).reduce((a,b)=>a+(+b.score||0),0)}
 function checkDone(){if(G.pl.some(w=>!w))return;if(G.pl.every((w,si)=>w===G.slots[si].w))win();else msg('Every spot is full, but some words are in the wrong place. Tap ✔️ Check.',5000)}
 function win(){G.won=true;const st=starsFor(G.hints),sc=scoreFor(st,G.secs),k=key(G.t,G.i),b=save.best[k];
- const nb=!b||sc>b.score;if(nb)save.best[k]={stars:Math.max(st,b?b.stars:0),secs:b?Math.min(b.secs,G.secs):G.secs,score:sc};else{b.stars=Math.max(b.stars,st);b.secs=Math.min(b.secs,G.secs)}
+ const nb=!b||sc>b.score;G.improved=!!b&&sc>b.score;if(nb)save.best[k]={stars:Math.max(st,b?b.stars:0),secs:b?Math.min(b.secs,G.secs):G.secs,score:sc};else{b.stars=Math.max(b.stars,st);b.secs=Math.min(b.secs,G.secs)}
  delete save.prog[k];persist();
  G.slots.forEach(s=>flash(s.cells,'good'));S.win();confetti();
  $('wTitle').textContent=['','Solved!','Great job!','Perfect!'][st];$('wStars').innerHTML=stars(st);$('wTime').textContent='⏱ Time: '+fmtT(G.secs);$('wScore').textContent='Score: '+sc;
@@ -289,13 +297,16 @@ function win(){G.won=true;const st=starsFor(G.hints),sc=scoreFor(st,G.secs),k=ke
 $('bNext').onclick=()=>{S.tap();$('ovWin').classList.remove('on');stopConfetti();if(G.i>=PUZ[G.t].length-1)showThemes();else openPuzzle(G.t,G.i+1)};
 $('bList').onclick=()=>{S.tap();$('ovWin').classList.remove('on');stopConfetti();showLevels(G.t)};
 /* confetti */
-let cf=null;function confetti(){const c=$('confetti'),x=c.getContext('2d');c.width=innerWidth*devicePixelRatio;c.height=innerHeight*devicePixelRatio;c.style.display='block';x.scale(devicePixelRatio,devicePixelRatio);
+let cf=null;function confetti(){const c=$('confetti'),x=c.getContext('2d');const dpr=Math.min(3,window.devicePixelRatio||1);c.style.width=innerWidth+'px';c.style.height=innerHeight+'px';c.width=Math.round(innerWidth*dpr);c.height=Math.round(innerHeight*dpr);c.style.display='block';x.setTransform(dpr,0,0,dpr,0,0);
  const cols=['#ff7a2f','#ffd36b','#7ffcf0','#e0439a','#22a06b','#fff'];const P=[];for(let i=0;i<140;i++)P.push({x:Math.random()*innerWidth,y:-20-Math.random()*innerHeight*.6,vx:(Math.random()-.5)*2,vy:2+Math.random()*3,r:Math.random()*6,s:5+Math.random()*7,c:cols[i%cols.length],vr:(Math.random()-.5)*.3});
  const t0=performance.now();function f(t){x.clearRect(0,0,innerWidth,innerHeight);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(t-t0<4500)cf=requestAnimationFrame(f);else stopConfetti()}cf=requestAnimationFrame(f)}
 function stopConfetti(){cancelAnimationFrame(cf);$('confetti').style.display='none'}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.ov.on').forEach(o=>{if(o.id!=='ovWin')o.classList.remove('on')});if(G&&state==='play'){G.pick=null;closeSheet()}}});
 setState('title');
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js');
+/* leaderboard name prompt: ask once per session; if skipped (no saved name), ask again only when a win beats an earlier best */
+function kfiAsk(){let n=null;try{n=localStorage.getItem('pa_lb_name')}catch(e){}if(n)return true;let asked=false;try{asked=sessionStorage.getItem('kfi_asked')==='1'}catch(e){}
+ if(!asked){try{sessionStorage.setItem('kfi_asked','1')}catch(e){}return true}return !!(G&&G.improved)}
 window.__kfi={get G(){return G},PUZ,openPuzzle,place,totalScore,get save(){return save}};
 </script>
 <!--lb--><script>// LIVE config (Firestore). Public web keys only (safe to ship per Firebase docs). Used only for J Woo's Fishing Challenge + its five8nine copy.
@@ -475,7 +486,7 @@ async function postNow(){if(!G)return;const F=x=>x==null?()=>undefined:typeof x=
   return show()}
 const api={init,postNow,syncBest,localBest,gameOver,submitQuiet,watch,show,close,isOpen:()=>open,get backend(){return REMOTE?REMOTE.name:'local'},_t:{cleanName,nameError,fmt,boardId,pid,keyOf}};
 window.PALB=api})();
-</script><script>PALB.init({"game": "kellys-fill-it-in", "title": "Kelly's Fill-It-In", "order": "desc", "unit": "pts", "min": 0, "max": 100000, "boards": [{"id": "total", "label": "Total score"}], "watch": [{"when": "state==='result'&&!!G&&G.won", "score": "totalScore()", "board": "'total'", "silent": true, "delay": 1200}], "overTitle": "🎉 PUZZLE SOLVED!"})</script><!--/lb--><!--share--><style>#dock{position:fixed;z-index:60;display:none;gap:6px;top:0;left:0}#dock.inl{position:static;display:flex;justify-content:center;flex-wrap:wrap;margin:6px auto}
+</script><script>PALB.init({"game": "kellys-fill-it-in", "title": "Kelly's Fill-It-In", "order": "desc", "unit": "pts", "min": 0, "max": 100000, "boards": [{"id": "total", "label": "Total score"}], "watch": [{"when": "state==='result'&&!!G&&G.won", "score": "totalScore()", "board": "'total'", "silent": true, "delay": 1200, "valid": "typeof kfiAsk!=='function'||kfiAsk()"}], "overTitle": "🎉 PUZZLE SOLVED!"})</script><!--/lb--><!--share--><style>#dock{position:fixed;z-index:60;display:none;gap:6px;top:0;left:0}#dock.inl{position:static;display:flex;justify-content:center;flex-wrap:wrap;margin:6px auto}
 .dk{box-sizing:border-box;height:34px;border-radius:17px;border:2px solid #fff;background:rgba(0,0,0,.66);color:#fff;font:bold 14px/30px system-ui,-apple-system,Segoe UI,sans-serif;padding:0 12px;margin:0;white-space:nowrap;touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer;flex:none}
 .dk.ic{width:40px;padding:0;font-size:17px}#dock.inl .dk{height:44px;line-height:40px;font-size:17px;padding:0 18px;border-radius:22px;border-width:3px}
 #dockHint{position:fixed;z-index:61;display:none;box-sizing:border-box;background:rgba(10,10,20,.92);color:#fff;border:2px solid #fff;border-radius:12px;font:13px/1.3 system-ui,-apple-system,sans-serif;padding:7px 36px 7px 10px;top:0;left:0}#dockHint.inl{position:relative;margin:4px auto;max-width:320px}
