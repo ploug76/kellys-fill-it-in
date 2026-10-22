@@ -1,0 +1,550 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kelly's Fill-It-In</title>
+<meta name="description" content="Kelly's Fill-It-In: a relaxing criss-cross word puzzle. No clues, just fit every word into the grid. Bible, Food and Random puzzles with big, easy-to-read letters.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Kelly's Arcade"><meta property="og:title" content="Kelly's Fill-It-In"><meta property="og:description" content="A relaxing criss-cross word puzzle with big letters: Bible, Food and Random puzzles."><meta property="og:url" content="https://ploug76.github.io/kellys-fill-it-in/"><meta property="og:image" content="https://ploug76.github.io/kellys-fill-it-in/cover.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Kelly's Fill-It-In cover with pixel-art Kelly and a word grid"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://ploug76.github.io/kellys-fill-it-in/cover.png">
+<meta name="theme-color" content="#2a1036"><link rel="icon" href="icon-192.png"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Fill-It-In">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{background:#2a1036;color:#fff;font:18px/1.35 "Trebuchet MS",system-ui,-apple-system,"Segoe UI",sans-serif;
+ background-image:radial-gradient(circle at 10% 0%,rgba(255,122,47,.25),transparent 45%),radial-gradient(circle at 95% 15%,rgba(0,230,210,.16),transparent 40%);
+ padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);overscroll-behavior-y:none}
+button{font:inherit;color:inherit;touch-action:manipulation;cursor:pointer}
+.scr{display:none;max-width:640px;margin:0 auto;padding:0 0 24px}
+body[data-s=title] #sTitle,body[data-s=themes] #sThemes,body[data-s=levels] #sLevels,body[data-s=play] #sPlay,body[data-s=result] #sPlay,body[data-s=samplelock] #sLevels{display:block}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;min-width:52px;padding:0 20px;border-radius:26px;border:3px solid #fff;background:#3a2f7a;color:#fff;font-weight:bold;font-size:20px;text-decoration:none}
+.btn.big{min-height:60px;font-size:24px;padding:0 28px;border-radius:30px}
+.btn.go{background:#22a06b}.btn.or{background:#ff7a2f;color:#2a1036}.btn.pk{background:#e0439a}
+/* title */
+#sTitle{text-align:center;padding:18px 14px 30px}
+.port{width:168px;height:168px;image-rendering:pixelated;border-radius:24px;border:6px solid #ff7a2f;box-shadow:0 0 0 4px #fff,0 0 28px rgba(0,240,220,.6);background:#1c0b26;display:block;margin:6px auto 12px}
+h1{margin:0;font-family:"Arial Black","Trebuchet MS",sans-serif;line-height:1;font-size:clamp(38px,11vw,62px)}
+h1 .a{display:block;color:#ffb37a;text-shadow:0 0 12px #ff6e28,0 3px 0 #5a1d0a}
+h1 .b{display:block;color:#7ffcf0;text-shadow:0 0 14px #00e6d2,0 3px 0 #0b3b44;margin-top:4px}
+.tiles{display:flex;justify-content:center;gap:5px;margin:14px 0 6px}
+.tiles span{width:40px;height:40px;background:#fff8ec;color:#2a1036;border-radius:6px;font:bold 26px/40px "Arial Black",sans-serif;box-shadow:0 3px 0 #b98a52}
+#sTitle .sub{font-size:20px;color:#ffd36b;margin:10px 0 16px;font-weight:bold}
+.col{display:flex;flex-direction:column;align-items:center;gap:14px}
+.col .btn{width:min(320px,90%)}
+.smpnote{display:none;margin:14px auto 0;max-width:340px;background:rgba(0,0,0,.4);border:2px solid #ffd36b;border-radius:14px;padding:10px 14px;font-size:18px}
+body.smp .smpnote{display:block}
+.credit{margin-top:16px;color:#d9c7e6;font-size:16px}
+/* headers */
+.hdr{display:flex;align-items:center;gap:10px;padding:10px 10px 6px}
+.hdr h2{flex:1;margin:0;font-size:24px;color:#ffb37a;text-align:center}
+.icb{min-width:52px;min-height:52px;border-radius:14px;border:3px solid #fff;background:rgba(0,0,0,.35);font-size:22px;font-weight:bold;padding:0 10px}
+/* themes */
+.themes{display:flex;flex-direction:column;gap:16px;padding:10px 14px}
+.theme{display:flex;align-items:center;gap:16px;min-height:96px;border-radius:20px;border:4px solid #fff;padding:12px 18px;text-align:left;color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.theme .ic{font-size:44px;line-height:1}.theme .nm{font-size:28px;font-weight:bold;display:block}.theme .pr{font-size:18px;display:block;opacity:.95}
+/* levels */
+.lvls{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px;padding:10px 14px}
+.lv{min-height:96px;border-radius:18px;border:3px solid #fff;background:#3a2f7a;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px}
+.lv .n{font-size:30px;font-weight:bold;line-height:1}.lv .st{font-size:20px;color:#ffd36b;letter-spacing:1px}.lv .st.e{color:#9b8bb8}.lv .w{font-size:16px;opacity:.9}
+.lv.done{background:#1f7a5c}.lv.lock{background:#4a4060;opacity:.85}
+/* play */
+#sPlay .hdr{position:sticky;top:0;z-index:5;background:#2a1036;box-shadow:0 4px 10px rgba(0,0,0,.4);padding-top:calc(8px + env(safe-area-inset-top));margin-top:calc(-1 * env(safe-area-inset-top))}
+#pTitle{font-size:20px}#timer{font-size:20px;font-weight:bold;color:#7ffcf0;min-width:64px;text-align:right}
+#gridWrap{display:flex;justify-content:center;padding:8px 4px 4px}
+#grid{display:grid;position:relative;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.cell{display:flex;align-items:center;justify-content:center;font-family:"Arial Black","Trebuchet MS",sans-serif;font-weight:bold;color:#2a1036}
+.cell.on{background:#fff8ec;box-shadow:inset 0 0 0 1.5px #6b4a2b;cursor:pointer}
+.cell.len{background:#d9f6ff}.cell.sel{background:#ffe08a}.cell.hint{color:#9a5b00;background:#ffe9b8}.cell.hint.sel{background:#ffd36b}
+.cell.bad{background:#ffb3b3!important;animation:shk .4s}.cell.good{background:#bff0c8!important}
+@keyframes shk{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+.cell.pop{animation:pop .3s}@keyframes pop{50%{transform:scale(1.15)}}
+.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px 10px}
+.tools button{min-height:56px;border-radius:14px;border:3px solid #fff;background:#3a2f7a;color:#fff;font-weight:bold;font-size:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;padding:4px 2px}
+.tools button .i{font-size:22px}
+#msg{min-height:30px;margin:2px 12px 4px;text-align:center;font-size:19px;font-weight:bold;color:#ffd36b}
+#words{padding:4px 10px 10px}
+.grp h3{margin:10px 4px 6px;font-size:19px;color:#7ffcf0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:48px;padding:0 16px;border-radius:12px;border:3px solid #fff;background:#fff8ec;color:#2a1036;font:bold 21px "Arial Black","Trebuchet MS",sans-serif;letter-spacing:1px}
+.chip.used{background:#5d5070;color:#b9aecb;border-color:#8a7da3;text-decoration:line-through;text-decoration-thickness:3px}
+.chip.hint{background:#7a6630;color:#e8d7a6;border-color:#c9a94f;text-decoration:line-through}
+.chip.pick{background:#ffd36b;border-color:#ff7a2f;box-shadow:0 0 0 3px #ff7a2f}
+/* bottom sheet */
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:20;display:none;background:#1b1340;border-top:4px solid #ffd36b;box-shadow:0 -8px 20px rgba(0,0,0,.5);padding:10px 12px calc(12px + env(safe-area-inset-bottom));max-height:46vh;overflow:auto}
+#sheet.on{display:block}
+#sheet .top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+#sheet .t{flex:1;font-size:19px;font-weight:bold}
+#sheet .pat{font:bold 22px "Courier New",monospace;letter-spacing:3px;color:#ffd36b;display:block}
+#sheet .none{font-size:18px;color:#ffb3b3;margin:6px 2px}
+#sheet .rm{margin-top:10px;background:#a33a3a}
+body.sheet #sPlay{padding-bottom:48vh}
+/* overlays */
+.ov{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(10,4,20,.82);padding:16px}
+.ov.on{display:flex}
+.card{width:min(420px,100%);max-height:100%;overflow:auto;background:#1b1340;border:4px solid #fff;border-radius:20px;box-shadow:0 0 0 4px #ff7a2f;padding:18px 18px 20px;text-align:center}
+.card h2{margin:0 0 8px;font-size:30px;color:#ffd36b}
+.card p,.card li{font-size:19px;text-align:left}
+.card .stars{font-size:48px;color:#ffd36b;letter-spacing:6px;margin:6px 0}.card .stars .e{color:#5d5070}
+.card .stat{font-size:21px;margin:4px 0}
+.card .col{margin-top:14px}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:31;display:none}
+/* sample/leaderboard/dock text size overrides: 16px minimum */
+#dockHint,#dockHint.smpc,#smpBuy,#shareToast{font-size:16px!important}
+#smpLock p{font-size:18px!important}#smpLock .lnk{font-size:17px!important;padding:12px 0;min-height:48px;box-sizing:border-box}
+#palbOv{font-size:17px}#palbOv input,#palbOv button{font-size:18px!important;min-height:44px}
+#palbList li{height:auto!important;min-height:30px}#palbTabs button{min-height:44px!important}#palbX{width:46px!important;height:46px!important;border-radius:23px!important}#palbCard .sub,#palbCard .note,#palbCard .err,#palbCard .src,#palbCard .mybest,#palbList li,#palbTabs button,#palbOv div[style*="font-size:14px"],#palbCard>div:not(.big):not(.row2):not(.ttl):not(h2),#palbOv .sub,#palbOv .note,#palbOv .err,#palbOv li,#palbOv div[style*="font-size:13px"],#palbOv div[style*="font-size:12px"],#palbOv div[style*="font-size:11px"]{font-size:16px!important}
+</style><!--sample--><script>(()=>{try{const R=location.pathname.split('/')[1]||'',K='pa_sample:'+R,q=new URLSearchParams(location.search),v=q.get('sample');
+if(v==='0'||(!v&&/\/peters-arcade\//.test(document.referrer)))sessionStorage.removeItem(K);
+if(v&&v!=='0')sessionStorage.setItem(K,v.replace(/[^a-z0-9-]/gi,'').slice(0,16)||'1');
+const s=sessionStorage.getItem(K);window.__SAMPLE=s||null;if(!s)return;
+document.querySelectorAll('link[rel=manifest]').forEach(l=>l.remove());
+if('serviceWorker' in navigator){try{navigator.serviceWorker.register=()=>new Promise(()=>{})}catch(e){}}
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();e.stopImmediatePropagation()},true);window.__ACS=[];['AudioContext','webkitAudioContext'].forEach(n=>{const O=window[n];if(!O)return;const W=function(...a){const c=new O(...a);window.__ACS.push(c);return c};W.prototype=O.prototype;try{Object.setPrototypeOf(W,O)}catch(e){}window[n]=W})}catch(e){}})()</script><!--/sample--></head>
+<body data-s="title">
+<section class="scr" id="sTitle">
+ <img class="port" id="port" alt="Pixel-art portrait of Kelly" width="168" height="168">
+ <h1><span class="a">KELLY'S</span><span class="b">FILL-IT-IN</span></h1>
+ <div class="tiles" aria-hidden="true"><span>W</span><span>O</span><span>R</span><span>D</span><span>S</span></div>
+ <p class="sub">No clues. Just fit every word in!</p>
+ <div class="col" id="titleBtns">
+  <button class="btn big go" id="bPlay" type="button">▶ Play</button>
+  <button class="btn" id="bHow" type="button">❓ How to Play</button>
+  <button class="btn" id="bMute" type="button">🔊 Sound: On</button>
+ </div>
+ <div class="smpnote">🎁 <b>Free sample:</b> puzzles 1 and 2 of every theme are free.</div>
+ <div class="credit">A Peter's Arcade original for Kelly's Arcade</div>
+</section>
+<section class="scr" id="sThemes">
+ <div class="hdr"><button class="icb" type="button" data-go="title" aria-label="Back">◀</button><h2>Pick a theme</h2><span style="width:52px"></span></div>
+ <div class="themes" id="themeList"></div>
+</section>
+<section class="scr" id="sLevels">
+ <div class="hdr"><button class="icb" type="button" data-go="themes" aria-label="Back">◀</button><h2 id="lvTitle">Puzzles</h2><span style="width:52px"></span></div>
+ <div class="lvls" id="lvList"></div>
+</section>
+<section class="scr" id="sPlay">
+ <div class="hdr"><button class="icb" type="button" id="bBack" aria-label="Back to puzzle list">◀</button><h2 id="pTitle">Puzzle</h2><span id="timer">0:00</span><button class="icb" type="button" id="bMute2" aria-label="Sound on or off">🔊</button></div>
+ <div id="gridWrap"><div id="grid" role="grid" aria-label="Puzzle grid"></div></div>
+ <div id="msg" role="status" aria-live="polite"></div>
+ <div class="tools">
+  <button type="button" id="bUndo"><span class="i">↶</span>Undo</button>
+  <button type="button" id="bClear"><span class="i">🧽</span>Clear</button>
+  <button type="button" id="bCheck"><span class="i">✔️</span>Check</button>
+  <button type="button" id="bHint"><span class="i">💡</span>Hint</button>
+ </div>
+ <div id="words"></div>
+</section>
+<div id="sheet" role="dialog" aria-label="Words"></div>
+<div class="ov" id="ovHow"><div class="card"><h2>How to Play</h2>
+ <p>Every word in the list fits in the grid exactly one way. There are no clues: the crossing letters must match.</p>
+ <p><b>Way 1:</b> tap a word in the list, then tap its first square. The game figures out across or down.</p>
+ <p><b>Way 2:</b> tap a square in the grid to see which words fit there, then tap one.</p>
+ <p>Tap the same square again to switch between across and down. Placed words are crossed off the list.</p>
+ <p>💡 <b>Hint</b> fills in one word. ✔️ <b>Check</b> shows any word in the wrong spot. Solve with no hints for ★★★!</p>
+ <div class="col"><button class="btn go" type="button" data-close>Got it!</button></div></div></div>
+<div class="ov" id="ovClear"><div class="card"><h2>Clear the puzzle?</h2><p>This takes all your words off the grid (hint words stay).</p>
+ <div class="col"><button class="btn pk" type="button" id="bClearYes">🧽 Yes, clear it</button><button class="btn" type="button" data-close>No, keep going</button></div></div></div>
+<div class="ov" id="ovWin"><div class="card"><h2 id="wTitle">Puzzle solved!</h2><div class="stars" id="wStars"></div><div class="stat" id="wTime"></div><div class="stat" id="wScore"></div><div class="stat" id="wBest"></div>
+ <div class="col"><button class="btn go big" type="button" id="bNext">Next puzzle ▶</button><button class="btn" type="button" id="bList">Puzzle list</button></div></div></div>
+<canvas id="confetti"></canvas>
+<script>
+const PUZ={"bible":[{"W":8,"H":9,"s":[[1,1,"A","CHRIST"],[1,3,"A","BETHANY"],[1,5,"A","NOAH"],[0,8,"A","JOSEPH"],[5,0,"D","ISAAC"],[2,3,"D","EXODUS"]]},{"W":8,"H":10,"s":[[1,0,"A","ELIJAH"],[0,4,"A","MATTHEW"],[1,6,"A","JESUS"],[4,8,"A","LAMB"],[2,0,"D","LIGHT"],[5,3,"D","MESSIAH"]]},{"W":8,"H":10,"s":[[1,0,"A","GOLIATH"],[3,2,"A","JUDAH"],[2,5,"A","CROWN"],[0,7,"A","JUBILEE"],[0,9,"A","GIDEON"],[5,0,"D","ANDREW"],[3,4,"D","PRAISE"]]},{"W":8,"H":10,"s":[[4,2,"A","PAUL"],[0,4,"A","SAMSON"],[1,6,"A","TOMB"],[1,8,"A","BREAD"],[7,0,"D","SOLOMON"],[5,1,"D","CAIN"],[3,4,"D","SAMUEL"]]},{"W":8,"H":10,"s":[[3,1,"A","SARAH"],[2,3,"A","PHILIP"],[0,5,"A","MANGER"],[0,8,"A","JOEL"],[4,0,"D","MAGI"],[7,1,"D","HOPE"],[5,3,"D","LORD"],[1,4,"D","SAMSON"]]},{"W":8,"H":10,"s":[[1,0,"A","JUDAH"],[3,2,"A","MANNA"],[0,5,"A","REBEKAH"],[2,8,"A","ISAAC"],[1,0,"D","JUBILEE"],[4,0,"D","ADAM"],[3,4,"D","JESUS"],[6,4,"D","CHURCH"]]},{"W":8,"H":10,"s":[[3,0,"A","JONAH"],[1,3,"A","MIRACLE"],[0,6,"A","ISAIAH"],[4,8,"A","HOLY"],[6,0,"D","ABEL"],[4,2,"D","SABBATH"],[2,3,"D","ISRAEL"],[7,3,"D","EDEN"],[0,4,"D","SPIRIT"]]},{"W":8,"H":10,"s":[[0,1,"A","CHARITY"],[0,4,"A","PROMISE"],[2,7,"A","HEAVEN"],[3,9,"A","GLORY"],[2,0,"D","SAVIOR"],[4,0,"D","SINAI"],[0,3,"D","EPISTLE"],[6,3,"D","PEACE"],[4,6,"D","SAUL"]]},{"W":8,"H":10,"s":[[3,0,"A","SHEEP"],[2,2,"A","DOVE"],[0,4,"A","GENESIS"],[0,6,"A","APOSTLE"],[0,8,"A","ESTHER"],[3,0,"D","STONE"],[5,0,"D","EZEKIEL"],[7,0,"D","PRAY"],[0,1,"D","KING"],[0,6,"D","AMEN"]]},{"W":8,"H":10,"s":[[0,0,"A","LEAH"],[4,1,"A","RUTH"],[1,3,"A","PRAYER"],[0,6,"A","BLESSED"],[1,8,"A","DANIEL"],[1,0,"D","EGYPT"],[6,0,"D","STAR"],[3,2,"D","JAMES"],[5,5,"D","PETER"],[2,6,"D","ESAU"]]},{"W":8,"H":10,"s":[[0,0,"A","JORDAN"],[3,2,"A","TRUTH"],[0,4,"A","FAITH"],[4,5,"A","AMOS"],[0,6,"A","PSALM"],[3,8,"A","VINE"],[0,9,"A","JUDE"],[4,0,"D","ABRAHAM"],[7,0,"D","JOHN"],[6,4,"D","GOSPEL"],[3,6,"D","LOVE"]]},{"W":8,"H":10,"s":[[2,0,"A","SAUL"],[2,3,"A","JOSEPH"],[0,5,"A","MARY"],[0,7,"A","ESTHER"],[3,9,"A","EGYPT"],[5,0,"D","LOVE"],[7,0,"D","BETHANY"],[3,2,"D","HOLY"],[0,3,"D","SAMUEL"],[2,5,"D","RUTH"],[5,5,"D","MERCY"]]}],"food":[{"W":8,"H":10,"s":[[2,4,"A","RADISH"],[0,6,"A","NUTMEG"],[4,0,"D","BREAD"],[2,1,"D","CARROT"],[0,2,"D","MELON"],[3,6,"D","MILK"]]},{"W":7,"H":10,"s":[[1,0,"A","BEAN"],[0,2,"A","BROWNIE"],[1,5,"A","TUNA"],[2,8,"A","SALAD"],[1,0,"D","BURRITO"],[4,4,"D","WAFFLE"]]},{"W":8,"H":10,"s":[[0,0,"A","ALMOND"],[3,2,"A","DONUT"],[1,7,"A","CABBAGE"],[2,9,"A","OMELET"],[4,0,"D","NOODLE"],[6,1,"D","PUDDING"],[2,4,"D","TOMATO"]]},{"W":8,"H":9,"s":[[3,0,"A","CHIP"],[0,2,"A","ROLL"],[1,4,"A","BURRITO"],[0,8,"A","PUDDING"],[3,0,"D","CELERY"],[5,2,"D","CHICKEN"],[7,3,"D","HONEY"]]},{"W":8,"H":10,"s":[[3,0,"A","CANDY"],[1,2,"A","PRETZEL"],[0,4,"A","CURRY"],[3,7,"A","ONION"],[3,0,"D","CHERRY"],[7,2,"D","LASAGNA"],[0,4,"D","COOKIE"],[5,6,"D","LIME"]]},{"W":8,"H":10,"s":[[1,1,"A","MANGO"],[2,3,"A","PEANUT"],[1,7,"A","OATMEAL"],[0,9,"A","STEW"],[5,0,"D","CORN"],[7,0,"D","BROTH"],[2,3,"D","PANCAKE"],[6,6,"D","CAKE"]]},{"W":8,"H":10,"s":[[1,0,"A","GRAPE"],[3,2,"A","SALSA"],[1,4,"A","FISH"],[1,6,"A","PUMPKIN"],[0,8,"A","WALNUT"],[4,0,"D","PEACH"],[7,1,"D","SALMON"],[1,6,"D","PEAR"],[4,6,"D","PLUM"]]},{"W":8,"H":10,"s":[[0,1,"A","BERRY"],[3,4,"A","SUSHI"],[1,6,"A","MUSTARD"],[2,9,"A","APPLE"],[1,0,"D","LEEK"],[7,0,"D","CHILI"],[4,1,"D","YOGURT"],[3,6,"D","SOUP"],[6,6,"D","RICE"]]},{"W":8,"H":10,"s":[[0,1,"A","GRANOLA"],[0,3,"A","STEAK"],[2,7,"A","TAMALE"],[2,9,"A","POTATO"],[4,0,"D","PORK"],[6,0,"D","OATS"],[0,3,"D","SORBET"],[3,3,"D","AVOCADO"],[5,4,"D","BANANA"],[7,4,"D","KALE"]]},{"W":8,"H":10,"s":[[1,1,"A","TOAST"],[0,3,"A","BACON"],[2,5,"A","PICKLE"],[1,7,"A","BAGEL"],[1,9,"A","CEREAL"],[3,0,"D","TACO"],[7,1,"D","BURGER"],[0,3,"D","BEEF"],[2,3,"D","CUPCAKE"],[4,5,"D","CREPE"]]},{"W":8,"H":10,"s":[[1,0,"A","PEACH"],[0,2,"A","CHILI"],[4,3,"A","CHIP"],[2,5,"A","OMELET"],[0,7,"A","BEAN"],[1,9,"A","TOFU"],[4,0,"D","CHICKEN"],[6,1,"D","OLIVE"],[0,2,"D","CAKE"],[2,4,"D","TOMATO"],[7,5,"D","TOAST"]]},{"W":8,"H":10,"s":[[0,4,"A","SORBET"],[3,6,"A","LEMON"],[3,8,"A","MILK"],[0,9,"A","RICE"],[4,0,"D","CREPE"],[7,0,"D","PUMPKIN"],[0,1,"D","BUNS"],[2,1,"D","PEAR"],[1,4,"D","OATS"],[5,4,"D","TAMALE"],[3,6,"D","LIME"]]}],"random":[{"W":8,"H":10,"s":[[1,3,"A","PICTURE"],[0,5,"A","BEAR"],[7,0,"D","WAVE"],[2,2,"D","GIRAFFE"],[5,2,"D","SUNRISE"],[0,5,"D","BEACH"]]},{"W":8,"H":10,"s":[[0,2,"A","MORNING"],[3,5,"A","TRAIN"],[2,8,"A","BUTTON"],[4,0,"D","GUITAR"],[1,1,"D","ROSE"],[6,4,"D","MIRROR"]]},{"W":8,"H":10,"s":[[2,0,"A","STORM"],[1,4,"A","TRUMPET"],[0,7,"A","RIVER"],[6,0,"D","MAPLE"],[4,2,"D","SUMMER"],[7,4,"D","TREE"],[0,6,"D","FROG"]]},{"W":8,"H":10,"s":[[0,1,"A","BRIDGE"],[0,3,"A","HAMMOCK"],[0,6,"A","MAPLE"],[2,8,"A","ROCKET"],[5,0,"D","BEACH"],[3,3,"D","MAILBOX"],[6,5,"D","TREE"]]},{"W":8,"H":10,"s":[[1,1,"A","PUZZLE"],[0,4,"A","CLOCK"],[2,7,"A","RING"],[4,9,"A","BELL"],[6,0,"D","PEARL"],[1,1,"D","PILLOW"],[3,4,"D","CHAIR"],[5,5,"D","EAGLE"]]},{"W":8,"H":10,"s":[[3,1,"A","CLOUD"],[1,3,"A","BICYCLE"],[0,6,"A","VIOLIN"],[1,8,"A","SHOE"],[4,9,"A","ROCK"],[6,0,"D","QUILT"],[2,2,"D","PIANO"],[4,5,"D","TIGER"]]},{"W":8,"H":10,"s":[[1,2,"A","PENCIL"],[2,4,"A","NEST"],[1,6,"A","BALLOON"],[0,8,"A","DRUM"],[2,0,"D","OCEAN"],[6,0,"D","GOLF"],[4,2,"D","CASTLE"],[6,5,"D","BOAT"],[1,6,"D","BIRD"]]},{"W":7,"H":10,"s":[[3,0,"A","LAMP"],[0,3,"A","RAIN"],[0,6,"A","WEATHER"],[0,8,"A","LADDER"],[0,0,"D","ZEBRA"],[3,0,"D","LION"],[5,2,"D","HOUSE"],[2,3,"D","ISLAND"],[0,6,"D","WOLF"]]},{"W":8,"H":10,"s":[[2,0,"A","BOOK"],[0,2,"A","RAINBOW"],[4,4,"A","CLAY"],[2,6,"A","POCKET"],[0,8,"A","PLANET"],[0,0,"D","SPRING"],[2,0,"D","BRICK"],[6,2,"D","WHALE"],[3,5,"D","MOON"],[5,6,"D","KITE"]]},{"W":8,"H":10,"s":[[1,2,"A","FOREST"],[0,5,"A","DUCK"],[4,6,"A","SNOW"],[0,8,"A","SHELL"],[1,0,"D","GIFT"],[5,0,"D","CUSHION"],[3,1,"D","TRUCK"],[7,4,"D","TOWEL"],[0,5,"D","DAISY"],[2,5,"D","CAVE"]]},{"W":8,"H":10,"s":[[1,0,"A","SUNRISE"],[4,2,"A","BEAR"],[2,4,"A","CARPET"],[0,6,"A","BOOK"],[4,8,"A","BELL"],[1,0,"D","SAIL"],[6,0,"D","SKATE"],[4,2,"D","BIRD"],[0,4,"D","ROBOT"],[2,4,"D","CLOUD"],[7,4,"D","TURTLE"]]},{"W":8,"H":10,"s":[[1,0,"A","HARP"],[1,2,"A","GIRAFFE"],[0,5,"A","BEAR"],[2,7,"A","DRAGON"],[2,9,"A","OCEAN"],[4,0,"D","PLANT"],[6,0,"D","GIFT"],[2,2,"D","ISLAND"],[0,3,"D","LIBRARY"],[4,6,"D","WAVE"],[6,6,"D","MOON"]]}]};
+const PORTRAIT='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAIAAABt+uBvAABB20lEQVR42p29eZAk130e+L0jz7qruqr6np7pmek5cAwgAIRISALFQzZFWJIlWgrT8gbD9NrhWG/Y4bAdjrX3il3v2vvXxoZ3Hat1OHxoJZnUUiQl2ZApghJBcAgCmMFcjenpnu7pu+47szLzHfvHq65pDLha2xkZ3dWZr6ryffn7fb/zZZNfmbUA5BxeuHoFwN77d/qaPxyKjl9WWlFC8R+/XZlxzIujoRjH0rXZOJaKs19+ambl4vJXv3Xrg3YMQCkN4JOs8SuLOVG3/r7mvVg50K7NAMyl+dFQTF+MY2k+M1TwKL5wrbpycRnAzsYugM7de0poM6D07FVzymz7b15PGgMAbSGKnJOraz/y7HR7YgA/vzizfdQeCoW79wpXryw9+xSA+bv3DpPOPRSmF2R+mqlGIEppSsl0Mk9sXvv4ikV+l5R6sQJIFCuLs9Us/+t//WfNgK9+69ZWX1AhI5Drupw+bh0mtIeiUjoEEMuzRedLqzZg/8P3g+12FCpQSsx7Cy597crMZ56ZezA+mUP9MA8G/iOmd3r+Rc6tcmbx1FkA2SMJ+KePtD88Fy4q80uV+db7d5XQnbv3jBwVrl4pALj5AYB7tBAqAFCcBQq+zc6eurcvu8H1sX80FL1YmU+8VLT/q5euLH3hT5e+/E//he1Njz+x+RSwmVKAkN9KSgAc6IgSAK5Nv7Rqv/pXvwBg/R/82teadnTyITmb/vWff/6CmzwYW+aIvns/OfnMHzn/FkdJTCDo/4dpwAU3eQzQFG+DUev9u9W5gqjMA7h67RKA7Pt3brqzgcLf/bPPv/YzT7/yV/6FURAH+kur/qt/9Yt/p9H4s//4DzAURkFedoOlL3wRwJ/7xSt/8O29cTsCoICjofir/+gPrvrJO7vdrb4AkAgFQCkAMPKYs6kB9Hbiv/qR637u4sLPXpv73Ir/+zvBVEAmaiV8ANlXXj49fv/N61k8RgfA4isvn548gHc/8i1PW8GHJMj8MjDpu/cB1I46xcbgtKyerR++nz7z2s88DeCpc3M3Ng4ATJVrUC6/sJz/5r2mxakCro+dz3/l384/c/Hf/Pa9I8uLQABYQKBw5+HRHWAKzZSGzBaBGEkZx/Kb95r8H/wagK817UDB4vSXn5r5a59dBfDguAdYAPpf+V4WmCrIwgul2VOTP17fyh7JP0E0/iQJms09pqRf/7nLg7OXpn/3v/K9Fg+eoCtDhOb1V791yyiUxelqln9p1b6d+O/sdo+GIlBIxOT46uDwTVIxRwwQhkQuFW0Aq4PDl+esLZFa5aMtkXoq/1gNw2H468OyIXjz9pxNX7sy89c+e8mgY5Sr/5XvnZ7Swgul2curHxKNf/X2E9P+sV996YkjqXrtj19/dMG2Th8Mnsn+xCeffwzQP16onH7ng7E1/e4WD6xyZvGU3E5NxmFC7/CZCZUAgTrFLECg4FNM2cdw+S/MxJ/89I+tBsPj4WhU2wew2xqdX1nY3DkAsFxKBU25nQQAMjZdLqUakXrjQX8rM/9Ln37mcyv+n4DO8mVSfuHF00eO17cO3ml9SChsK/vLzz0B0PH6ln/rSV76EQCZNxu5enDc++gXtJ9dOm0apjBtZeZPswkAi9PTf+ZsOpfmX1q1V0vppaWZD965Of2QRqTKDr17NLg6l2lE6v5hvxVONKLkMQAFl12dy0xGnsz/9P0z0wYwvfjJmONe/7duPIiTJ9A5PWYiZf/rdz6qX08C9LWzCxPC//BHfPeN905j1J9jix+mQINU5+69N0kFwEet1aWi/aVV+xNnqlbB29trTqVmOmC3nyxnrUGsDlr47FMTLO4f9oMRC2kMIIzpYo6szWfNeJkqTi/JQMMrif/Jl56Y+Uen/SOH/QkAvfaLjy0E+5XCydc39mafXmVrqzktx2F05uycszqTbx8UxlZbKmeoo3t7M34QF2YuuElbMAD5Um7u8vkqTSr1nbQat3jKkG7Opv/986n/4rl5m5Pa3vburYPdZu12LXjrUbjXlweBUlrlHJZz2CBWnbH85FouVV1MRv2dxvBgIAaJ7kuEklgg/Qjbzei4HzpQs6E4c46l27zEJvYh/fkXXryy5HqO2cdhdHhrY7gzeGLO1ZeWrr14+fSwiR/7g52PArR8pVRemR+Uy3Eq5QTBY4DUiI0GDwu5fLK8SGeKOS0Xyrn8+UX4sb0XlBgrMbazN6zq/cPiygU3KXFV4qotmIHJtqyFxg7L55eWZn/r55ZZImp724TS40HQT8YAZkvpc2U3zWQj1Eeh4kT3InUwEM+dyT+zdqm2t/31e632WALIEms2g/N5Xk3TapraXLcDsjOSR+OxT3U6RWlKqRHL/vJzL15ZMjMxu251Hn77PTV60ndd+7kfS5YXp8PoTJHOFA/e+MFHoQSQOZtxX3zWvI5TKc4riahPaLx/jz7KvPdsMTsolwflMgBWLs8bsN84nAj2Fqpbbx8/kzVWY+qzrVxcftoKfhJ49Vrh4f3JnTlotleWl5eWZpJOuFevxYNueS5z1pLbSXC3JR0qSx57+crlvXrtze1uyWPBiPkpWXDRGaMzlgCWs9ZZy38+A/OWt/bixVzyfCYTrYoLszlzkdPt8NbGdC6n9YutreI/dWP/0y++2OzWpqgHB9EgPFpeqMSplDlCZ4q5qxcGacjG3nSYVYs6LEiXiwCMKJW4qurkpz/+9I3vfl/G4+2jVrlaeeXF57mQb713+8H2XpqpRqRavSAgIp/zZx31aKCvzljcops7B5SQdo/6KQngVktCK9+iwYgFWtzphQ9H46LHnlrMpJncbKkRiS/PeMNGp3Dt6nQm8v7Wxm/e/ugMn/vyp+hM8UkxaTQO720EB9FHx9OPnZ9ZmXsM0N/+b/+iaDSMsPFKQlNq3A17zfppjADMrMxV5gqjwcOoQaYYRXePd88vl7gyPsW1a2vfe/0Pg6a0fPqxn3ypMJP/YH1z/dFeOAwHsdpohq1B1ItUL1KtQZRzWM4hsdRKy3zEt4OxZeuCyzZbKmtrAO2AgIt2QHYD5RE2SMReZ1z02PkiP2qTO81h3gU9aCxW8nEqlWk07r/x/Y9OOHtFVT736Y+i4ATB3X9960eKTLFCFyt5JwjC/WPd6rC/9Rd+arGSH4RHcTKcDhp3wyAIzHc/hnamePbs8iA8On0d6fsHHRZUdXLt2toP33p3+6g1M+NceuEagA/euSnjMemqgIgLlbTn2yky4eZVO1VLYgAHLeQdGRBxty6fqtj3mtFsmnZj2ktgYOrEailFFKF3evJ4rAex5kSvzvBE6dvHUdJv7R10Vl64euud+53XH/2I2T618MQszHbrnft3buy1pfrofjsYPrLyt4+GD7rJg27CTazw7Odeff/3v9PdfmzXG3cfvR8Mn/3cq6f13Iy8579jKMlss6KbBDje3L+xsXd1LnPphWtJJ9zaum9n8t3t1ihDlp3Ubmvkpb3Jh8RqgOCs5QPopAYA3e0nT1f5B0cKFAWXbfSSRW6FiAFkGAPUej+Zd0iGMQDBiO0iKbgMkLdr4uP2wXf+6VcAHMQ/Ioz4wbG6+d7xBXdvGtxOA9tpwPDEZiFzOjRhf+sv/JSh66zn1u48PD103A0b2xuFXP60DsepVO7qBRXUjFZmr6igKS+snX3j7ffyOf+ZtUuPdg/6o9HK0pnm8YHl0xQnjUh1hvF+Z/ywm/QGdBBCUjmmcqHqer7dGcZjoT1OHw3EbJqOhS65pJKlYcByPs7k+VGAEqOx1h+MVE8qwrQnuaSy4DKb67t1Oc8CORrsBXFIkyd2UpnJl3LGKXli637wcBro+srylRXSBABLOdnlxYmHLNgEIKNBotHo3w3UiE33qEEa2w8qc4UneC539cLs+dxo8BBAqlpsHh/s96KVvLtx3HBldOGZSw/u3jUj39zu/tut0c22OBypg7FWkPM5EozYIITFxHzGIbalEgHA5no5a+UcNltKr+Td1Ypzfnl2rpQreWrO0zaFFHog0U90iiHrks2WOpPnNtcPu8lcml9Ke7vDJ4XIAPTRkLUtmAHIxPotHhh0ngAIALtYLm5s1c0+Ojzc2Rs+oZPNPjpxbynj6lbnNEx0phg+qiejvluYubl5cHUus9sazWec1dW1B3fvBk3ZZfjWRvtOR2U4MpxUbT5j0VjrZqjynPsp2YuU59tlhxLbolLmHOalvZX56tWVlWJxprq6VJjJF2by85m8l8vOWbFLZE7xRixqicpxZIm1Pkieq9iJ0g+7SU8llSwdhP8/ABm/5PduHrHm4aJKT0LIE/EB8I0wU6XJiwu+8fL46TffTnzN9z4qjf0DNjApmJ0P2dFMa/iJ1bU33n7P+CyDWK2urm1t3W9EKiTjb61HPuhiiiihA2jKSR5sMWeMoCy4rFJMlR1qZ/ILGWAGlp8GcPnskpPziTO5MB2JiAdWwUvSKTtTqzTb4Va83lM3u+paPk5z9vpO+PF5p+CyzU68nLVKwp2Sy71E37tZ+wLwmWfmTBxn0h2/d/Poh+u7LzJWtIJptqgk/BYPfpeUWmHyW3eaKxeXL7jJBTdhn3/58mO1bPXQaP0IZ+nDUje9Fc+m7K2t+7drwStn8ybs7HRau62RiMX1oyRW+iCUO4FS0EVOC5QvlFDx+Wwp/ezZublSrjRTXp6dm1ksp5mzsrK8uDI3Oztj5TzCHyfCCaeMM5ZAOkgzR2vliFAIeTzWVCNna6rZVj+JhDpfsGOpC0XZHGqTgX4bpZFU99uRp5XKFY3s/Kt36nceHimFA+XYenyG2I9DMxlvxlbJs4JEvf/gmCu1Ws3w/xBv8om0tkFnNRhubd2/ezR45Wx+tzWqFFNTI5WxaS8Sh5EeSzyb4Ys5YuRlYaZo+enZdKpQLjq5ya0jDsc8Is9j2VzY7zlhCCDyPADmNQAn56OHYQFLqAIYxHthLN4fCMZoyVZU8Xoo6mF0ucg7Y3lpzvrgSL1lVRFLz7F8it+601zd7Xoz5bDZ2OoLn8J32TjGPRSgO7NEAvi2ngHsksfm0hxDMY7lV27W3tnt8ieyjbf+w1K2Jq2z2xqZZMVuP3mllAqa8r3BYG0++4frvVasW5I97avFHFnOWl7aW1leNtBMJgwQh9Pq7CTPb35mc8jmzJ9hvxd5nhOGRt1OYxQPup1xdyDJzQHmuap4pOKRVkzW26LikbX5bBd9k0QHcG5lDsCdh0e0vQ+AAufQeXY++7WmPY7lPRTunSQ1XZuZ5Mw/38LREONYbrejD6nYRiP4kSoGoHCSr7vgJql67U23Ohv1R2GQ4uTGXq/gskrGOQrDXqRSRN3rxPdHOOdiKUUWMtaFSvqZtUtp2zaCw13LoBN5nuW4Yb8noshy3ElGsd8zry3HtRxXj07cV6m4axldCyVP+p36QEslDwVLpBwlWPCxnOXdmMZRdHXGemvoWQRrZ+f+6d/9rB4FvQi13ogo/Wmr9V9+9urP//JPiz+4dde2OaNCThBaytn/w0vFZ/+zn/uFbDQ8ONiMLM4oNXO+4Ca/d/PoKzdrbSGegKYk/H2RnE5TjirVa/39UW3fZLxaoawUU7utkcnv3KiNW7EGMO+wkscqxVSqughgqlbE4QYdA4eXzXnZx4bm9Ouprk000fju3JtNp86vLCzmSKRRYhJAI9brPbXf01dLE5dnLv1YOUw23adwbbYqMktf+NODcvnHf6I0l+Zzae7azLXZ2aLzshtcefUFAJXnnr28kDdn2d989byhrhsbB4lC08lcRDj1nXxlvY/eH+nKICEXZzMAMjnP3tlilr21e5Tz7Y1m6Fv08oy334sOBuLcbObdw9CkBl+osILLLi7NLhQKVsGzqTWRHU4B2KUZIyM/UmCNWIkoAiAtS1oWF8IQNnetSCdp5nSadUh5PNYAUgw9AQXdGuvzeV4biZ/IjKsuq9l5PQo2tuoPjoed7hBAhnaWWodZz/13v3Fny3MADGNl0NwXln+89/SZyq3Xv/fWZn1fWADYx1+4+tVv3bq129EalJIwUXtWaon2fWUB+K4e3UApUai1Bwajuf0HB812ymJppu4eDTZb6sVzuRQnNx/FOR+tQdQMVSiR5WQhRc9UMqWZcqGaS3NvKj6R50nLmirXaf2aouNlcwY+y3FFFE3ZGlIBMIpGpKq1+0KR7TG1iS5YZCC1VogEWc6yWOoRcXb6yXZf3bqzvVef5J6TTO6P6rJ2b+OPrIkTNIxVxp7YzZsd+ejd2xu1/vXxxIawm7ujXqKzFjUpU0JIJPWGcu/adj3nvVCgm5FFlJYgnVb/T/mD64+6zy0W4kG3Eam398cuV8/Ppd7c7tZC9VTFPmqT/UgyQuYdlnXJ5RlveXaOeZYRH6MmXAgDkJn8VKemeD1x5Akhmhp+m7DxeLBeC7hWPiN5h6YpHIpIqrRFKj63RHRfpvfq/eGpdLDBwkjHRwEyp06fZUulwnKGZ2w647FEapcRlxHOJsn2L/ydX301PLrRThKpf+Hpyu/vjGbnyytxA8CNvd5RqD59sRBIvVEPLKbn0nwviHZDPWMTSUnJJeeXZ3OpdC6TdXJ+1AsYZ4RTY5v0aDhWEoABxYiJ0bspNEaODEYGWR2JVr3RP2x7KU86oMR6uF9rRrqdQCq9kqYjAcZoK9JljwIoWLRHnYxNp/vLbrDIk0WeTFGYonM0FKeRmnzpL8zEP3PeP/Py89994731g2AqWi+7wWu/+NkBcOXVF16+9TtwcdkK3gHW2g9QSt09Guz39MeqVtmhX7/XAvDx1cL9w34Y07FUjFEpVcF9fB+iXmD8Yx0JByfeTRg+4e+o2vEJV3tTOTIvVO346O7O8XCUBEPLT+/Va8al+vhqoX6n3RP6UDD05OUcDWMykHKzEz9XdREPvjyrbtqLd4PJxQg/MfnPv+cmF2ZzppRk6jRmzNWTAcbtZn/lxaXnvvwFOlNcyrjv3tqeQrvIk3TreHmh8v7vf+fXD+m+sG525Jdnh5ZtBVJv7CfZau6VC9VbjxqEYCFjUSmvH8WSknas8xwAljK8ZOticcZLTQgIUk2N0VQojPoYDdKRmFL4aUpKNnZv39nsdDsLhcLas5fmzsyWUtlmtz+Mk3wu93C/1ow11TpSsAlWCyyKSV/CCNEoTFYK/p1oQnONhFUslS/lXl7MsLXV799v7mzs3g2sRsKeGPCJT12bWZnjJv84KJdZ50N9DdfHPja7u7/9nfWDrinvfmnVxghlh+62RgslPHc+v7lz0BlLU5Z540F/IAChXIZWrFc8DsDO5AEMRYjexDnUkZjaeO/EJ5wAAUyFy/C0EZx7P7hrpOalT35s6li6wGUsdRptq+B9fLWwdbNdi3TVwWGkz4yYZ8eI6WYnPl+wAbBRG8j9p+Wk+fpBF7/9ndVSemd3F6BPYHR9KzbovOwG6wfBz5wvHjTby6WUncnf2NgD8NPPrGzuHFw/SvZHIu/QvWBS/PPsk1JiwUtz77QjM3VtnmyayeZwKtoI+z27O/jhW+8CWKpU566uGHTMAB0JJ+cXgKEIF2aKi6l+I05qEaoO7oyi1QxZzJH1tj5fQGcs6136xfz2r4uz/1HQyPtbk+aF9YPu+kEXoI1Gdysz/9GhplXnE2eq5lq3tu5v7hyYIOPbt3Y2eqobqdUMWe9JAC3JVqbo+GkTJRj2MUxkR4M4nzFT/f/yDw0EN2/et/z05bNL5Ew1Aro7ew+Oe8frW6ul9Gw6ZaBPc2+pUr1a2ns4SHoCYwlAhzELFKt4sjOWBZfVgXAYwv1PkqAn/n7ZDSb6dQqd1VJ6VNvf2uqa4mc4DL20d/do0BnL9bYYCLxU4a1Q9gR6AsuuzHACwISvRnxu/OBuEgzjQdconeFXI1+lUok4XIWhsW7OSZbjeHPfxG7kTLXb7n/3jff+4RsPH0mnmsvWegefzMln57N/++d+3HzIcxeXvrr9AMAIzIUcSOnZquSxVigLLrOC7sBlz4pH76fP/EcDtPjKy1/91iRE9ZJ++cOnX1jOr5bo33+7/aXVPBu1yw4tO3R3iPuHfQDrbcEY/Zl5C8DbdTEC4xyAZIwCemGmaAho/eZeEgyXKlVrbSXNvU6jfTwc7dVrAFDHnt+8fHbJrWSNZhmSMtMG4FaytXb///zX3/6NQ3bl+efOAf/k51d/fyf4vX/zB6Iy32m0Z88vogfLTzvkJFMs0Yp1xSMFlwGT+trp7W5gYWP397F84fi9nY2jqYH76AAA/HMr/r4bXB/71c5+2qJPoPPzswYde9lDLKidyW/uHAxitZy1rh8lGcY+dTkXDsPXd8JGrIWQACKGeigv5ibfurfXTILhubWVmfmqIREfKPZ7ThjWwoR12kkn7DTaBcCtZKchvrH3SSdsovbdmzvvp8+cLTYe7hydW5l7cNz7U2r42l/+yVKpZMY7OX82nfrYufLuvQaAHEekUQ91yZOmCcJg1Gh0f7hHpFQAfsgo3j1KMWraCZVW5vhj/gXw9sGHVKxWWEwPDp/A8neOH7NJPOgahm5E6q2tznyKrc3n6u3RD2rJw0Ab8SkxOZZogU31aK9eO7e2YiZjpt08rH0QsUuOrM5Xo+KKE4ZHd3fWt/cuY8mtZKd2aoovgL/x8sy/v5V85pm5C7O5qmcBMwDG9T45UzVyVygXLy/kca8hhIwYHIKBgGkXMXIE4DChnDHOGAAhpWnZsjj1KQLFAIRRAsCkkExDTyIUf3DcM02GAI5I5dxhc95SyPgmPfTHN3eQmf/EmerW1n0AZYeaBozzBfvqXObu0eAHteTBQI7A5rk8FAxATyDH5dRLtPx0mntRLwCwvr33z//wzpsdJYTknL1SoF/61FNLSzOFcvF4OOo02rO5x9yX5p57tWod1paWZgB56cVKmtvOSSvnaXTM9okzVeABgFqE8/5kWBjTqYrNW+rZsjD0ejQUc2nuzZSv+snKxeXfu3l01U9+607Tpzi3Mvez1+bMkbvBiU4FarIDGJ509yx72MrMf3l2aPjCzuR3W6N6e7SctTI2/fq91g9qiZHMFVv1BEpM1k5KiqWlpSmPdBrtTqP9v3z9+3/pq7feJBUUZy++9MK555977hf+1O8cq+/c3Fnf3ltamjEOtzFtU1cgs7qS5l7SCQ2dRb2geVgb1/tOzjeWzhjHCScUHpd3Mhwljw2k3O9po2Xlcn6Vj7yZCc2aFysXl0131pSJrvqJSY+YlqiJij11bpJ2yxKR5rQGAHh9s/uyi4WTSoZpBZsKDkBKtq6HcBnyDt0MZO5EX10GNmqjlAawtDSzt9f83Vv7X7nX+IVXnzW3y7DJ51Z8lqtMhKWSbaI2FGGpOwgBuzuIgHG97+REfKZaPFO1uwPjJTjwo17w2Ks6QccqeGfniu90GgAGUmc4Kbis4sl6KDtjUnDZN8Z+Y9D9TOnON1A9nS36KEN/8/XHtQl+uuToU+AU5V9eyM+KrmnSKDt0EKurc5k3t7v7Pe2DTF3BDCPdSBlqnHgxBPX2aGUZSSc8Ho7MR/3XC/nZy3NA8jdenrnw86v5YtbuDiI+MVU6EmnuGRlxnqijGz1yODlTjQEnDN1K1vgExsmaYmRoaHqfOmN5vmDXw+hwhIKLP2PXvpGZL9PAtC7//xr4nY1dwOKZ7Q9OH02fVBS8mfKseAQgHnQB3D0aZOxJ/tCzUfJYK0TJY1sDsZohN7vqQobtBZJzJoTsCdRpxtzVa+cXASy1WqVSqdVqyUIRAOu09WDSxmTQMVMdtkIjFG5lkgCI8xkvmzN6Z4Jbw+LeSWhi3mtM3rKHqgPjrGaEMpE6Y7QXCYB1xhIU18f+l2eH148xjUsfHPcM3axm+VQBzSmTw8b06Ont2eGjaWm03h5lbDqI1WYnDmNa8tjhCOcL9n5P5x3qKRtAydbAJAE6ueJgmHTCqBdEvaBUKkW9IM293CA0Qd9QhDhl2s3+uIZxSnyC2xt2dwCAVmc/mpw14mM+zfLTOc9xCIzDcTjC9MI2O3HBZT+hDn9k0+/KxeWrfmI427RiGwK66iccQNhsTDEaCpXm9IvpxpZITVsKK8VUvT2625IOxdNVvtmJ51MsY9PDSL5U4fs9sebzMDb94uCc9YRsNLo4n8eJjOCUsDjwT6eZpxmPcf1xw+lULsb1vnE1p8UiE6YYsbKjD2XQjXfeExOSHgo1iBUAxmik6OlOYyBt6OZf/uYP/5HNpo2ndzjFneY/+hNCDQCmg/nyQh6iu9tPXjmbb0TKgLI2X3hrqxMptjaffWurk+EouGy/J4qct4VwCCKNFGQPGAq1G2LpZJJOzjfomKBsmnv1sjlT4Tm6e9IuWH4c2RotMz7Uw/s7e/XaUqVqCkcyN7BPMbQxcwCyRDycOPRKysepwqFQAAtG7CdSh6YPfaJBlKxmuTH8T6T6JwNuJ/4THOSlPVGZX/Zw92hgUhn3D/slj71yNl9vj+qhdqgMh2EY04pHOmNJOTGdYTYlGTZxQPqan1zZhFamQjGtahgdCfs9/aj2vUe1QrloFbzJeM+j1dk4nzEYJZ3wmauXAezVa51G23D5FJ1O40OJGiHkPJetWDNGAdRD7YOUbG0cooLLTKP6tG/ZaI+pYfzSp595YTnvzZS9mbJ58WSG8ZMXsne69GezwY2NvUoxdf+wv9saLWctUz59fTfKMGZIZ9rQ7FAZjJhnq1hpY+MBjMcRG7WPhyMTSRiMDEw6EqfRsbuD9e3HDQFTWZg0s7da69t7VsFzcv65tRUAW1v39/aaxrcyOwBjKz9UL9IT9gEQQJtL9VPSWI8ppfgUhn3MEZM8exyRGRU7GoqgfwTACJux6xmb3j/sr81njfcM4PWd0ECwUMJuP/FsVXDtgxZCoWHHRoIGUjsEnLNIS2PppzfZqMaUelUYArAj0Wq1kmC47GF9ey8JhrshPgEUysUAtaEI9/YmoSyAUqmENTy8v7PVGk4Zx6Bjsh9JJ+xrblwVh+B8wd7tf6ghxnhDL7tBpX/ncHbNQLBycRknuDxtBXzYNUF/2GwAYK9cmN9oBEGiLKX+9tnx/3Wc/tWFpNULBrE6U8mY/OF8xvk3d7rbgaw6JO/iTM7qRcq36FjoWqhM4+4g0SC6ESNSSECp1rMzhbMZmktNqivSgU0tGSUyShhnkCpqD2WUbD06Zpa9UCh0uh1DsXu90cZhc9xpDkNx7dqalfOmNZ8wDNPM2euN+s1j7vnDOEnbdqGaY56V5t5OvfndzUZPoMSRt8hSht+oJxnGxlKllFXJ0oxNz2L4VuZiJgmfsXpv18UwVs0xGgkLm41qZ19o0mh065KZWshnsmM+VUWXAkhMxsf0dz83U9zcObh8Ze3163d6kXAIGKPnC9bgpIpyOIJnqzCmfko+akvGaO5URAZgN4Q1HJlbnXTCDkIjR1P6MIxjBpxbW0k64dIpiUhzz7C1iSfWt/d+99Y+gM8/s5h4MG66yTcZRt9qDTe6UY4jVjjjuJud+DDS1/LqcIDQiztj1hnL5az1Z8f3fn1cvn6Ml93ga0PbOEGGf5/KqzvIb41PkbThJ7MI5U6XGitoMs0GnbdvrpusmE3JxRzN2HSzE5tewfkUACzmiImbfRAAKUjjhrx/2Dfe0GmCeIJQTbBuFTwTtZkXS0szs+cXZ+arTs4f1/s3fnD3h2+922m0R5Xq1zban39m8bmPXX3m6uXZdKpUKhmX0nD5+kF3SkB+Sq73lCHKDEc91MGIAfjg6HFa46m8esJsydSTDcPslQvzHStTyGcK+cxOP3nZDYo0oYSkPNuyLWs8+PrGoBVrRshLFb42n33YDEOhfYuuzvCjNhFE+hYNhR4JSEoejKkNHSnkOA4DWXHZ+aLLLHsYJ0YdAIyDcByEXsrrNNq1vW07nfUVYZ41JWk1Fpu7R3sPtg/3jmzC0rZ99qdeFM9e+Y1vvnfVFZ964RyrlF2HRSJKmWUCUgHojfr/8PduS8ps6GWPRDF5NFYphhTDcpY3QzWELrmkL0VvQH+6FG5mV2i/vy+sjpUJm42joeBJ2G50NnvxnnQDBYtgZtSa4Pdw5wjTcgFgGPqVs/mv32sNBFY8/nSVZ2z61lbH3JO1+ez9w76fwoJrb3biVkwyjO6EQgiMOANkT4Bz9sdbjcsL+WUMTXJ6Kkqz6VSn0d6r11LVRZMz2j3p4V02ulOpLvyZT4X9numxHQAf/NF7vH74+WcWS6VSDESeN1Uuo7N7e82eQNWRY4mcw/dHE69ia6DPF9jlItbbYr2tLhd5K4w/OLK/eGG7rkbezJmrfoLl/KQb/OLycx+KxWaY6/giCOpjlWhYBJd9aYnIYaQXqeWCe6sWa60+ecatjcTdurSYNg7Rjb2eWSdwrxlFimW4ercrs5y0E2SozlsYSZQtXYswFSKjbiqJmWUbUQo1uXx2aafe/J//cPPOYe/Tn37+hV/6dNZzS596ZW55ru7Ypr8502jceud+ql67WM0uLc34vs+1kpblOmxK3r1R//9+c+NeI+AEZZtorWIFiyDSiDUGsX6uYld9tjeQUUxm07QWqiSJKz5fDGrX6VwjYWa3+518KTfp8mz1ALCrV9YsP1XvDAH8N9f8WRaMwuRCJb3bHQ/GyWY3+fi8UxuJt+siw6nF9GcvFndbI0rIWOiH3QRAkpC7A9lKULSIabVZ9shxhJKFnkCrH1xYKBV9ezadyqXSoSYA0rZtFbxz55a4axU8//KMs/Wo9o1HEdfkQTd5IUebRw06U/zgj947m+Lddj96uDubTqVtu7I4Oy2rTWuNUS/4YH3z/7i+Fym4FGtZK5JqKUX6CfoCnKKf6CjBx3JpwcRBIFPKaikJrQI3t9MMz1nR9w/DTnfY6Q4HYbzdV9f3gwfHw92j9rsHQ7acdkQQFB36t664bNSut0emX7UXqbHQFLrosRv1xLdo1tbnC/Y4Frv9ZGwWqcfWSGN7JOqSnXNhgjGhUbBIKFGPUXVghMjYe6vg5XK+r4hV8Gbmq3EmxbXiKadguy8slUp07HSbV9h4J5DtYZRbf1BM4vCwySHOnVuyGM/Pl0ykwrUyVXw9Ghrx+c0f7LxXC0yiI2ORZqTKLik6pBnrsQSniISmlljOWoNICiJDSUrEbgfhm6TSo85nsuP3hixIVDOUrd6o3hnWO8NOpBINdvXK2rUZ+y8vqYfbe1TKC5W0CVApIQcDcb5g364JSYkPogh9ajHzsBmuzWcvz3gfHCSPomh9ICMFG3rWIUOhfUYaknGtXIqeQJojIuxObXhtuWRzksv5ae55KS9TyMWZlJfNjZXkQjDOIp0sOI7NyWw6VUziYhIXysX8fCldzLIEMkqmxTVj+MdKiihio3HUC7YeHf+Pb2wByFvoaUaVjDQsSn2GWZfsh1poWASjWJ/PW4nSodBE0lJGu/l8jzqmzr4VMkUIo8SnMK1pGTmOEkUBfIYc/uvv73wjrp5fWTBOkJf2Mjb1lN0ZywBaSnUYyfkUwmH4ytn8wkzx195tvtEZ3+hr4++U7ck6gQxHCjLSKNkkx9GSzCRAfvOHu1utoQkjTmczvGwu8jzi8DT3rII3dY6NQ3C8uW9yQ+RM1QTx05TINNfRabT/t9dvmSxCS7IUpLmkbqTqoQZwzicTL1/AeCeTICaUJm02jcVM5HHa8M+lOf8i336jRk3u+aAJk/oJh6GJXNbbAkDFIwg1ALPe4p98Z/NGX+c4qg4yjGQ4GKOeraJgkm8dSwwEyjbpBdLh4JxtdKM/vrmzWkoDKABOzre7g3A6T89zcsL0aJoM7LTbypydBG4n2cXI8zzA7g5aIvzeo9rXuw4IziASQpr0RC3CmGuADAY679CyrQCYOKktxGKOtSA9Zf8Zu/aNuDrtfTEZewBzaBjD/9qVGXapmL0+9r+YbvyLdsEW4qVZJ+fbvTD54EjVQhVrfcZxaomilJzP84tLs7/x3vH6QFZtZDlxqGlbollbhzFtJQogMzYJFfoCsw6Zc4jp5mwn2AmUpeR8wfMyNkvAXYtrZVqEnDB83BZFLaNNppNIWhYA1u3q0ZCNxpCKcGqXZsJ+T9S6W4+Ov/79jdsBA5BWMecsFBMvrCfQTiA1pNIllxU57Qq1kmFb/aQZquUs70tR9Nhu4axJDX4QsLk0t/wUABEEprFqEMbsJ+czizzZqAUdJ/OXLqWOB8GNvd5Rm/gpmWiVsoihNB+kmqYlW7+1N+wkWHDJRc/JuMpnmE3TUOjdQO2NkWYIJaoO4YQcjPWyy8daxRolCyOwO7WhpeSsxw1GjDM2jqXrcCGmPePTRjQAbDQWta4DPWktl8oMI+k0rTWb+7X3jzqBxPVmAmBArLSKJ26RQo4jUogUyjZZ8GEx3Yx0xSUUeiTQibGUZgcD8SJtzVqio+wedV52g5qdv+onHStzbcZeK/uHvTG7bMkgGG9l5v/emeDWo8bGfrI5TBxbGf+45LH9AGlO+4lcyvDGML7ZEoTgl877gRZmQDBi94diM9CmNL7i4jDSVY8xgHGiFY4EW3EhlRpJ3GsE3VpryUOqmJ6wLzTh1HQGEU4hlYljxSjirsVdK85n7NIMSacxDiZnie4eHH33/sFqKX1Pp99+1AZg2W5XkSJXZmFxpACg6sCh5EKe7wdIFBZStB2QWOs0pQeBfLbiHLSwF0RLrlxjo5dmnRWfvDH0w2ZjPucCOOyNOTApfr1Ro/1O3BJkmuhpxaTkoWTreiimdQIA1/LUS3voJ6b7ZqOXNGJddTCWGAGHkV7yWT2UFY+VbA1QEUjGmEMm6eo3O6q82b0c7pgV4yZRb3hnQjq9xyu5iMOneejI83S9BsAB9vaay56JcierAJJ4bNnuoxhXeDACM/GgQ5DhaIWyHqqSTYIRG8hoICYNBJud+HzJztiuCc7f3O6GK/NX/eQd4J3dSVjHPp13/bg/Yt7XmvZVHVtcLmd5wWU36kk/0U+VrKMAzUg5FN0AiVZa45VFzxj7UZhsduKjQJv4T2iEQo8kpNZP5+kw1stZHkmyEyifouSykdCRglLaiUJFaDxoUGL5iqix2Kk3LYt4tgtARpMkDnctSIVxMFaSdbtsNDanmvu1TrezVKlaBS9sNP7wSAqRAPA9N47jhp7omtGyZZffHciRBCck4yrOOKXoJ7qfKErpOJHHI3EmZ82W0r8zKi1H7at5drMjTb+iN1Nm3tLSuTi4mBN0MFgt0aLHPE5v10Qr0S9V+Fjo/aGYsdhRpLpClV3yyqK3209MLLbZUn0Ji+i8wyKhIwVJmVJ6JJFIXbV51iWxlM1Ir2WtMJE7J8lCDZwppupjslHrh0qSeMQsu98Pjo9bBc93cn5v1I+VMDpoqApSTQsYj3YPLD9dqOYAqF730X5jJ6IA4jhOp9NxHA+IlUWSt9BKUPZIfaxHYAxqlGDZtjqJWEoRrdFPdCdG0SHHI+FAveCFjxqDxWrxZkdW5qvXZuxGwti5StGP+4sZlnOIUaJbLZkAP7Vge5weDETKIp1YHUfIcvKpZW+3nxRc9v7hqB0QAAeh7ArkLHo41gCuZiiH7gmMwC5m9KWSczwSg0RfLbJbXTk6qQmNJEQiP1EQs3OV9YPuVnvMOO2EcSeMx52m6ztp7sVKmN3AZGSn02h/9/7BTC49m07lMtlYiWEo+kFkeBpALpMKwrHh7CNpZZFIrY1ocwIFEKa11ruBXklToeBQjDX1GdpjOZfmxyPhxaP7Mn1txr4bWA93jrg3Uy67wW6/awrYrVB+rGpnbLrbT1qhjBQzYXHZJk+lnN1+EowYIOuhHgi5E1OzciHD1AgsBbkXyMtZK9JJS06IbL2nVjzeCmVLsqojjZNiPKOt+fJlUw4FTCrnqbzaRXH35s6yB6NBp1NIe/Xabohpe9mHUuk5+UaPTZ+uYtluEo8BHBD/IMaCDqa9VfVQ2pT0BLYGet5h9wNxOUsBGcbU5GfrNHM0FOYhRz4FN16AeYZGwWUFlx20sFBS+z09kPphkJRtkuHIMOanZCuUHtibx8mhYNPEmKmFr9hqM8AIbCjUtTxd78nlrLPbT3oCRc7vDCIhlMNR8Rgga5EE8LWNNk4AMj/vHHTR7a7y0W51YfdRDR9Zx3y6+e50ibzR6ALMst1AwfP8MAzMTzOg7hSTeAwJIQLOWYlJl6ER6wyXY4n9kchwMKYPR2Q+xcLK/Ny4ezQUJkPPvrRMizQxi7xqI3EwECtF9vpudBirRowcR94iAPIu2gGxmL7dT2xKmpGSlFFKy5YuWZAAAXIcnViPhF70idZ4ejF7+zi6P1RpR++Fqmoj0oiErjrkOJo8XanVD1KclbPusoeeQDnrlrOuTcS9RtQcjGdZEHXaLJ1d9pCzYDTLoOPkfBklsRL9ftAJ40DiqDMcUJcxJqUSIvE9T4EoKabSZNnuiHsD6h7E5EhaPlX1hCzYABArWERHUpU9anUb1nCwjNF4NBJemptn99w9Gpgc89WS/fpu1IgnTk0OciCQ4WjFBNCHA12yyUAgx3Ehg4s5WnCtzli+06Ub3YhzVnVkLUI91IzRcBiaTppupACUbFLxyNZADwSWXeyOwTl7L3Zyh/1VPsLKgglEACQeZAoAJHD+ZKmmSbNN0Znms6dC9LWNtmNzIU0DIMIoTnlONx4b828w4owC4J4PoA5fSPUoHFu2e0G2YwWbksMR5lOYT2E5a/36sOzNlPkUnRu1cS/SABtIbWwkhDwUbJ7LgSDzjAykNGEXhPoL511Tj97sxDe7qhYhx+EyOZbgnJmq5iBWUqocx0DqHEfFI2aN1P1ArPk80qIWyQUEb/R87MpfqWLVn6BwjMnrJ2rKp9ExrpPBaNnDbgjTHNYdhI7NjVskbJ7NZPuDPmcUBiPbNRiZejRjNOXlAOyr2RaFO2w04sSh9HzB3hKpl90Aw0fskyUaS33QQi1RWuulDJcxUlx3BTjFWpomCnmHNiLlWzRrs6Zkf/OFQiXjfGuj/e3jZGekUwznfFKwCEAak/CdHIz1kk+imMw6NFZaalwq8EslRxO1PVQVjw1i5TJEhC3Q+Ieh88MWcYKeSRulbXu6F6q5XM5nnpXLZE2YdrotyKiYSuLrj7o3o/RY6DAcuY4bxREADerYXGqitHZs7jouoIVUlBLGKCVUQyutAeLYzOMUXjrxsu+Ebq3V82WSSrnXxz47Y+n2WNYSJaUaCEApi2nO+KKHgs3DRMYKMy5rRrJsse2R+HPnnHK18v/cPLjeUgWLPJOnPz7npC3SDJVDMUpUK4FF0UoQxrriw2L6pVlnLc9v1JObTbGQottDVWK0liiHIEN1PUYWSVPbt0ZsfURfKnOzNlE6MNWuTCHn+74JOx73FLgWd63+YXsYJzv9+Ne2FWe0M4oY44yROI6NWnHLcm0rEZIAjFJGqcWZUioREtCcMUIIAK2hCDFJZ99ioZvdSNw7A1rwODvr0uUsL7mkE2MsdSdGyuL7I1Eb65HQDkXF4w8HiamaBgpfeGHlxsbet4+TgkV+6bw3l+a1kVhviwxjZqFGpBARppTua9aPlUVpiqPi86cXs9vN8FZXLvmsEamqxw7HOstJX7MM1TVBNGg7Une64qUy9zJ2qVTyfd8sgn5iN2s+WvWGGothnPxxn986GIwkgmDk2LbWWoiEMa6ksG3bsbmQSkhlcQbAsZnWREiptAY0IdDQADGql+jJ7nEaE9obJezZnFVyyXpbUEoasZqxyXYg+wLLKfb5s+4gknd6UgI/MWv1I7WYskqe+vZO0E/0Fy/6y6VUL0yO2iTPeUvJeijbimWoDoXOcVzy0YjRjnV3rA9HatnTVZ+91xJnUjxr01jpQOoZm0ilWgmySLqKaNC+IP/qXich7OkC9X1/mvSYLngxAb2ORBiGaizeP+r8szs9zmh7OGaMO7YVJ4IxblhZg7qORQgNgpECsTjTGrbFCKEGIwJQSgxGjBIAUSyNQA2DKOdZ7C9f8G61ZNnFUaAJsBWxD4T38Zx67XL+322Nvt8lBaafzlPE1nogni2y1iDa6suqx149l2tE6mEztGx9o5s0YnUYQSm95JJ2AknZxTSrWrQnVV9AKj0ItM11PVCzHqo+rQdyJ2ZcKwlsKL/IVU9zJYXUxHPt9Wb4Rw87Z+YyjmvloExWaJqoB9CqN0x/31ub9ZtdtMMkikLfcwkhYTgyQRkAxjhjzOKUMj4OAwXCGeOMckYNGQHQWlNKDBkxSqTUUimLM61JvdOjBy10IxUpNpD6UDAUZ8+UC69dzn9zvXtzgKd99cqsdb5g3xlFY4npg+p8kEak6u3Rfk//4VGyGWjTfPuTBW4SdylIJbRnq8tZy1Sid0Kx3hbnMtb5gr3RU2aMCbif2EZhFEbJ0VD85//y5v/+Bx+YjNqkI/GkG39S82oNv9a0FWfGM+SMhVGcTqdP1pz502dZcsY8z0/icSKE6ZVK+0/0Qk6ap6cPjXVsZtkuW0mTfqLuBqSTqvJ0FsAruh5H0fWmuOTjjOP0pXjQV/1ERQqRxEKK9iO1WmApou41o3e7sqeZUnrZxcUsFZLcGqocR9kmrURlbe5QGUk0JFNKX0u71+b4u4dJI1JLKWITVG0eKJ3SiQ3d0BYAJQVjXEoVa3Cbrx8O6r3RJy9VzeKyyPO4EFF7OGoNAOz1Rr+9NYwTSSizLJYISSnhjI3jREnhuo6USkjpOhajhBBqLBqlxPCRVFprLaQiQMqzDVUZzjIDhFT05gAP3dm55cWzRSdQ6IzlUKjDEUZgFY98vz82np5NyWT1dVtcLvK1+ewgVluDSV9ijqNkE/PE3RcKzJRfKh7bH4mtgTaZfJPkfmsvvh+IlyrcU/YZxylyPu0qOsOi02FUFIthELk2++a95j9f732o4xWwCp6p0wqpABjfJwwDi0+coKkcPfkUiXgcxRMh4uxDj82hhEqpwiiZHmeMUgPNnUb4QTuOYpkI0de8F4kUZD3ULclMbWDeYed8UrbJx+edV87m7x/23zqMdmKa4xhL9AQOI10PtZ+Sr13O//mL/rzDupGKlTZOuQl3W6G8H4gfz7pr81k/JRdK+H5/fCgmgJr6h0HnROZVK0wCNXm05eP2otyH/EizAnQ4HHqeTykJo0nidbr8wqwxsDj1HNuy3ak2WZxanBv7FcXSsZnxws1ZgyA9GoqjoXiq7DnQiRAA7qFgxpnnAzBGY6UHUgL41WtFAF+/1zL9HiaAyHHkOGoRHgb6zePkjQd9AB9fslczZNoH0xNYTPF6qDOMPHchFQ7Dgste343MMoGKxwwTmbD7NExRLAD8s7cPmoc1wz6nW+unYwwHObYlpDSxhcE3icenRYZS4tjcHInix4wjpDJz54xJqYwcGQSZ42fDRLXGKm0zARrFItHajkdn08yl8IluxOrpPN0N9JxvzTrq3cPk7sAEp2BQAMlbpGARmyBSqMfoxIoreW42E4yTsSR1QauWDuWk4Jm3yBkfHxypRwNxOyRZpgtMr3nOUSx+GPtFrgIrzRg3dpoxDsDEnz87ZxVs1ySGhiJMOqHxgK4/rJvxSmutdRCMDJHFccwYL+UzKd9zHavd6aZ8j1GiFChjSuspN0mlCSCkMvbOENOUp7hSE8HpKF5wWRRTALdRbA16AC0xuebzSJGeUPMp7PaT+4EYSyz59GKOvnmcADiM9LxDKh6zI9UTuidws6vOt0fLWWujF6UgB4IYIos0cg7f7SdtYUSSmrIagO9HPoBDlpuXvUOWexw9AcLmhmjMCtW9vebvHCteP/xa037U6BhhMWrCGM3ncmYBj1mAYgTH4jSfy4VR4jkWpcTiXMjYqJ7nWCfrf1QUJxZ3KKFgkFKZJxvzRAijw4kQnTEqaeewF3JGx175CjpnHV3yiAHiQw8AixRAX1txb9fEYSQfBhqQZZuYKLcWTdL7hgVipU3+xWVwqGyFCEBasX6lQIcCAN4bjAH/DItSMugJJHIM2zV2OgyD4XAI4LVv7FXSjnnadATigEVQ5VLhMfuerMFJhOpNVC8xqJmnpx72Is+xLE4ToYwfFMWCEurYDIBkamrdh4GY+gcs5ae11oxRSomQknDuM/qzbufPL4pFD+2xvNNR7QTPZvhxpM/nuQ01SHSg0Ax1ySFn8rzkEGjSjnVDsgzVpkb+Y2W7M5a3ulJoLLhkMWUdj5XQiCSKDjkKdKBQYvRsjoYR7o3JAo0XbMw65N3YNzqipBAi8Ty/lPLSrmM5lkUAICaUUaIpZScOSxTLRJjQgRBCLE7jRIRRMpt1UzYPhVJagzENGPvNKDHRhuFjo2haE6WU1oQzKpVOhGSMAIRlM1l9sgHIO/y/W4t32tG/P4zeqIlHEWVQQmPWoQmw2xevLHpPl6xWqPqJ2h2q2x0RJfrH5+ww0YmUZ9PsTIq/Om8DuFFPGjHKNpmx2M2eMFQtNUqcMU76iW4lSihigbRj2RPoa5Z2rDmMayzje67vea7reo4VK0gQRskkUBJqCs2JraEAUVpraEqpEGocJ0XPHkmMYvFU2dvrjgmhRY83uv2U75noVGsTykMDFmcGFyGlbXGABMGIMc4ZY9lMjhAYdAD8jNXeaUc3Oskt4Q+I9XyW9CIJIMV1mtJWog9HquzRy0VrFKMTKwkMJLqhzNps0cOnLxbOlpz9zvhWS/YT3ZBsxScHoTSlTpOEY1AzLvMY0QqNWA2FMiErgJuhVWFJm6USIbXWUqo4kcasaE20PhF7+qT3zSgxGCVCKqWiKLRcN2dTMBYlqj0YUsYI55TxqRDZFteA+XDXMaEMMV9kWyyRMC4ly6SzGto4oEqpHElSWr0RTpZQn3W1lJJT5B3WiFTeoVKqmy2xkmEVn3YjnbNoP9GxwtUie+5M/v5h/81Ho+2BsogeCj1Q9HyKXi2yeqAijVLKWeTi3lCHUs1Z7HKJncuw5TTrR6pqaa6VFsk2L1oWk1Iprc1uLLFSykyGM/ZRgAxlqBM9IJQFwci1bI/TR42O5/kW51JqxmgYJSdwmP83oJXWRoiMoiVC2BYXUkVRqEFZJp0lhDBGtYZSqs9SV5xhfRgPiAWgqMe1CBFhiZRVj0mpGKMjoeMINtfQymfYGWlC8KfXCm9tdR4NFICh0F2BumQAFi2cyXMD5bwjH4w0J+hp1o7lg77aGymXsnM5uj1QeYs0JRtQdxwGjm3PZt2Ma2Vcq9kbEMqmSFFCpdRS6mlu0BCzUnp6py3OKGPd4bAXjC3bdWxLaSWkLHnWIBLsBGLOqNYEOGXUGZVKW5xJpeM4VlKwTDprdBIAIRgLWR+On8/Roo5rLJOT4UPt9zS/lKZP51H2KLTqJ2CceJILIlsx2Q50miML8WigWrHeiphSk1IUpTTPVSTUUpqVXNIOSKy0AnyqhZ40yoRCLafZwUj5Fj2OkdFRT/NCLt0fJ90gvjjj7XcD4xAZjJRShICQicYxShKhhJQaeupY2xazLZ7yPco4AZQyckdjBdviUZzYFp/yl1RaSjU9YnGWCAUQk/NnmXTWoMsonaS7Lb8/CpXSro4T0J7mn8zJF/LqzePkONCdGABcThRFRlt3h8lI4mKKpJS1H0mp0Ym1a3oxKBNC2gT9BFoQLvlzC3wpzfYGsi/gMsw7ZNnlgdIu1UJBa31T5Wd10NBWIlFNOxnXGsaqF0w8RoOR0tqEoIakDDdN0eGMWSdrAhOhjNKZ9DMhRCmdd1izN7BtRylt8DXyMg1QDaOZx03FcTxRsTgRJgVJKfUoEXZKx+Ehy2V09PmSfrlCv7Uffz/yRZKkGfIWSVPqcnU4FpsBOGc+0bZNmpHsCZgCtA1tQ5tKtAIOxuo4EfWhSFtkIUXrgfIZ8S06lsq3KJE07+J2X7s6zjJ9JC0lRS8YBwLtwdDEEI7Njd3hjFJKpkkJpZRSk8zOk+icKJ1hLvP4KEWIbTujMEp5dpwIpR4bwSlABqMoFkIkExVjjCTCWDhIkEiqrrYB/MULqSAY/3EtPoxgCt45jqrNzYLV631KKU1BBhJzHuvEyqBTYrKnWZlrpXSOwzQuUq07CbpjvZCiY0n6iXowplKpSOiuUJRSqfSKi7dk0YQORmqy6RRnzLYmdseEHR9laGObCSHsMXBaKjVdFEYpnR7P2bQ9GFLGgUm+1eJUKWj9IfsolWaMs1w2RwgBCKDNd1NKKaUmHvlxu/fNw2QkUXVw0RZnPJKxWZVbgsj1nspQrZQu2+SZPG2PVcZmeY6qpQHyStaWTEulewKzDuFaEYKeZnmmF1J0qy+3QyzauuoQqQkjZMZlOUZ3xqoOz6QvCGBZzEzM6IK5sbbFjVMnpJpYYkYBQimxTj3CM07EKUeJTdGZClEYJRnfMbiYHOP0W6ZkJJXm5n+mmK8xofOJrPIwijd6inP2SDpVBLHSOcdSQreFOIx0pLHmc9PiaRJDEOqlCi+4LGPTD45UPZTTddDnMpYSmnIyn6KHIwykNqtvBwJ5h17M0WDE9pEs+Ww9okIqExBNMw9SKiGpd2KeHZtRSpiU5o5KqSQUY9TiNIrlj/yvXybCUFpRMPPfXkbh5KNOOwom/jr9xv8XlG6q+BfF8FUAAAAASUVORK5CYII=';
+const THEMES=[{id:'bible',name:'Bible',icon:'✝️',bg:'#6d3fb8'},{id:'food',name:'Food',icon:'🍕',bg:'#c75a1c'},{id:'random',name:'Random',icon:'🎲',bg:'#17807f'}];
+const FREE=2;               // sample mode: puzzles 1..FREE of each theme are free
+var state='title';
+Object.defineProperty(window,'muted',{get:()=>!!(save&&save.mute)});
+const $=i=>document.getElementById(i);
+const SK='kfi_save_v1';
+let save={best:{},prog:{},mute:false};try{Object.assign(save,JSON.parse(localStorage.getItem(SK))||{})}catch(e){}
+function persist(){try{localStorage.setItem(SK,JSON.stringify(save))}catch(e){}}
+const isSample=()=>!!window.__SAMPLE;
+$('port').src=PORTRAIT;
+function setState(s){state=s;document.body.dataset.s=s;document.body.classList.toggle('smp',isSample());if(s!=='play'&&s!=='result')closeSheet();window.scrollTo(0,0)}
+/* ---------- sound: soft, short, quiet ---------- */
+let AC=null;function ac(){if(!AC){const C=window.AudioContext||window.webkitAudioContext;if(C)AC=new C()}if(AC&&AC.state==='suspended')AC.resume();return AC}
+function tone(f,d=.12,v=.05,type='sine',when=0){if(save.mute)return;const a=ac();if(!a)return;const t=a.currentTime+when,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+d+.02)}
+const S={tap:()=>tone(660,.07,.035),place:()=>{tone(523,.1,.045);tone(784,.12,.04,'sine',.06)},no:()=>tone(196,.18,.04,'triangle'),hint:()=>{tone(880,.12,.04);tone(1175,.16,.035,'sine',.08)},
+ win:()=>[523,659,784,1047].forEach((f,i)=>tone(f,.28,.045,'sine',i*.13)),undo:()=>tone(440,.08,.035)};
+function muteLabel(){$('bMute').textContent=save.mute?'🔇 Sound: Off':'🔊 Sound: On';$('bMute2').textContent=save.mute?'🔇':'🔊'}
+function toggleMute(){save.mute=!save.mute;persist();muteLabel();S.tap()}
+$('bMute').onclick=toggleMute;$('bMute2').onclick=toggleMute;muteLabel();
+/* ---------- screens ---------- */
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{S.tap();if(b.dataset.go==='themes')showThemes();else setState(b.dataset.go)});
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{b.closest('.ov').classList.remove('on')});
+$('bHow').onclick=()=>{S.tap();$('ovHow').classList.add('on')};
+$('bPlay').onclick=()=>{S.tap();ac();showThemes()};
+const key=(t,i)=>t+'-'+i;
+function stars(n){return '★'.repeat(n)+'<span class="e">'+'★'.repeat(3-n)+'</span>'}
+function themeStats(t){let done=0,st=0;PUZ[t].forEach((p,i)=>{const b=save.best[key(t,i)];if(b){done++;st+=b.stars}});return{done,st}}
+function showThemes(){$('themeList').innerHTML=THEMES.map(T=>{const s=themeStats(T.id);return `<button class="theme" type="button" data-t="${T.id}" style="background:${T.bg}"><span class="ic">${T.icon}</span><span><span class="nm">${T.name}</span><span class="pr">${s.done} of ${PUZ[T.id].length} solved · ${s.st} ★</span></span></button>`}).join('');
+ $('themeList').querySelectorAll('.theme').forEach(b=>b.onclick=()=>{S.tap();showLevels(b.dataset.t)});setState('themes')}
+let curTheme='bible';
+function locked(i){return isSample()&&i>=FREE}
+function showLevels(t){curTheme=t;const T=THEMES.find(x=>x.id===t);$('lvTitle').textContent=T.icon+' '+T.name;
+ $('lvList').innerHTML=PUZ[t].map((p,i)=>{const b=save.best[key(t,i)],lk=locked(i);return `<button class="lv ${b?'done':''} ${lk?'lock':''}" type="button" data-i="${i}" aria-label="Puzzle ${i+1}${lk?', locked':''}"><span class="n">${lk?'🔒':i+1}</span><span class="st ${b?'':'e'}">${b?'★'.repeat(b.stars)+'☆'.repeat(3-b.stars):'☆☆☆'}</span><span class="w">${p.s.length} words</span></button>`}).join('');
+ $('lvList').querySelectorAll('.lv').forEach(b=>b.onclick=()=>{S.tap();openPuzzle(curTheme,+b.dataset.i)});setState('levels')}
+/* ---------- puzzle model ---------- */
+let G=null;
+function cellsOf(s){const out=[];for(let k=0;k<s.len;k++)out.push(s.d==='A'?[s.x+k,s.y]:[s.x,s.y+k]);return out}
+const ck=(x,y)=>x+','+y;
+function openPuzzle(t,i){if(locked(i)){state='samplelock';document.body.dataset.s='samplelock';return}
+ const P=PUZ[t][i];const slots=P.s.map(([x,y,d,w])=>({x,y,d,w,len:w.length}));slots.forEach(s=>s.cells=cellsOf(s));
+ const cellSlots={};slots.forEach((s,si)=>s.cells.forEach(([x,y],k)=>(cellSlots[ck(x,y)]=cellSlots[ck(x,y)]||[]).push([si,k])));
+ const words=slots.map(s=>s.w).sort((a,b)=>a.length-b.length||a.localeCompare(b));
+ G={t,i,P,W:P.W,H:P.H,slots,cellSlots,words,pl:slots.map(()=>null),lock:new Set(),hints:0,checks:0,secs:0,undo:[],pick:null,selSlot:null,lastTap:null,won:false};
+ const pr=save.prog[key(t,i)];
+ if(pr&&Array.isArray(pr.pl)&&pr.pl.length===slots.length){G.pl=pr.pl.map((w,si)=>w&&w.length===slots[si].len&&words.includes(w)?w:null);(pr.lock||[]).forEach(si=>{if(slots[si]){G.lock.add(si);G.pl[si]=slots[si].w}});G.hints=pr.hints||0;G.checks=pr.checks||0;G.secs=pr.secs||0}
+ const T=THEMES.find(x=>x.id===t);$('pTitle').textContent=T.name+' #'+(i+1);
+ buildGrid();setState('play');render();msg(G.pl.some(Boolean)?'Welcome back! Keep going.':'Tap a word, then tap its first square.')}
+function saveProg(){if(!G||G.won)return;save.prog[key(G.t,G.i)]={pl:G.pl,lock:[...G.lock],hints:G.hints,checks:G.checks,secs:G.secs};persist()}
+function letters(except=-1){const L={};G.slots.forEach((s,si)=>{if(si===except||!G.pl[si])return;const w=G.pl[si];s.cells.forEach(([x,y],k)=>L[ck(x,y)]=w[k])});return L}
+function fits(w,si){const s=G.slots[si];if(w.length!==s.len)return false;const L=letters(si);return s.cells.every(([x,y],k)=>!L[ck(x,y)]||L[ck(x,y)]===w[k])}
+function slotOf(w){return G.pl.indexOf(w)}
+function snapshot(){G.undo.push(G.pl.slice());if(G.undo.length>200)G.undo.shift()}
+let cs=44;
+function buildGrid(){const g=$('grid');const vw=Math.min(innerWidth,640);cs=Math.max(44,Math.min(66,Math.floor((vw-8)/G.W)));
+ g.style.gridTemplateColumns=`repeat(${G.W},${cs}px)`;g.style.gridTemplateRows=`repeat(${G.H},${cs}px)`;g.style.fontSize=Math.round(cs*.6)+'px';
+ let h='';for(let y=0;y<G.H;y++)for(let x=0;x<G.W;x++){const on=!!G.cellSlots[ck(x,y)];h+=`<div class="cell${on?' on':''}" data-x="${x}" data-y="${y}"${on?' role="gridcell"':''}></div>`}g.innerHTML=h}
+addEventListener('resize',()=>{if(G&&(state==='play'||state==='result')){buildGrid();render()}});
+function cellEl(x,y){return $('grid').children[y*G.W+x]}
+function render(){if(!G)return;const L=letters();const hintCells=new Set();G.lock.forEach(si=>G.slots[si].cells.forEach(([x,y])=>hintCells.add(ck(x,y))));
+ const selC=new Set(G.selSlot!=null?G.slots[G.selSlot].cells.map(([x,y])=>ck(x,y)):[]);
+ const lenC=new Set();if(G.pick)G.slots.forEach((s,si)=>{if(s.len===G.pick.length&&!G.lock.has(si))s.cells.forEach(([x,y])=>lenC.add(ck(x,y)))});
+ for(let y=0;y<G.H;y++)for(let x=0;x<G.W;x++){const k=ck(x,y);if(!G.cellSlots[k])continue;const e=cellEl(x,y);e.textContent=L[k]||'';
+  e.classList.toggle('hint',hintCells.has(k));e.classList.toggle('sel',selC.has(k));e.classList.toggle('len',lenC.has(k)&&!selC.has(k))}
+ // words grouped by length
+ const by={};G.words.forEach(w=>(by[w.length]=by[w.length]||[]).push(w));
+ $('words').innerHTML=Object.keys(by).sort((a,b)=>a-b).map(n=>`<div class="grp"><h3>${n} letters</h3><div class="chips">${by[n].map(w=>{const si=slotOf(w),h=si>=0&&G.lock.has(si);return `<button class="chip${si>=0?(h?' hint':' used'):''}${G.pick===w?' pick':''}" type="button" data-w="${w}" aria-pressed="${G.pick===w}">${w}</button>`}).join('')}</div></div>`).join('');
+ $('bUndo').disabled=!G.undo.length;$('bUndo').style.opacity=G.undo.length?1:.5;
+ $('timer').textContent=fmtT(G.secs)}
+function fmtT(s){s=Math.floor(s);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+let msgT=0;function msg(t,ms){$('msg').textContent=t;clearTimeout(msgT);if(ms)msgT=setTimeout(()=>{$('msg').textContent=''},ms)}
+/* ---------- interaction ---------- */
+$('words').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b||!G||G.won)return;const w=b.dataset.w,si=slotOf(w);
+ if(si>=0&&G.lock.has(si)){msg('That one is a hint word. It stays put.',2500);S.no();return}
+ S.tap();closeSheet(false);G.selSlot=null;
+ if(G.pick===w){G.pick=null;render();msg('');return}
+ G.pick=w;render();msg('');showPickBar();$('gridWrap').scrollIntoView({behavior:'smooth',block:'start'})});
+$('grid').addEventListener('click',e=>{const c=e.target.closest('.cell.on');if(!c||!G||G.won)return;const x=+c.dataset.x,y=+c.dataset.y,k=ck(x,y);const here=G.cellSlots[k].map(a=>a[0]);
+ if(G.pick){const w=G.pick;let cand=here.filter(si=>G.slots[si].len===w.length&&!G.lock.has(si));
+  if(!cand.length){S.no();msg(`${w} has ${w.length} letters. Pick a ${w.length}-letter row or column.`,3500);return}
+  cand.sort((a,b)=>score(b)-score(a));function score(si){const s=G.slots[si];return (s.x===x&&s.y===y?4:0)+(fits(w,si)?2:0)+(s.d==='A'?.5:0)}
+  let si=cand[0];if(G.lastTap&&G.lastTap.k===k&&G.lastTap.w===w&&cand.length>1){si=cand.find(c=>c!==G.lastTap.si)??si}
+  if(!fits(w,si)){S.no();flash(G.slots[si].cells,'bad');msg(`${w} doesn't fit there: the crossing letters don't match.`,3500);return}
+  place(w,si);G.lastTap={k,w,si};return}
+ // no word picked: select a slot and show what fits
+ let si=here[0];if(here.length>1){const prev=G.selSlot;si=(G.lastTap&&G.lastTap.k===k&&!G.lastTap.w&&here.includes(prev))?here.find(s=>s!==prev):(here.find(s=>G.slots[s].x===x&&G.slots[s].y===y)??here.find(s=>G.slots[s].d==='A'))}
+ G.lastTap={k,si};G.selSlot=si;S.tap();render();openSheet(si)});
+function place(w,si){snapshot();const old=slotOf(w);if(old>=0)G.pl[old]=null;G.pl[si]=w;G.pick=null;G.selSlot=null;closeSheet(false);
+ S.place();render();G.slots[si].cells.forEach(([x,y])=>{const e=cellEl(x,y);e.classList.remove('pop');void e.offsetWidth;e.classList.add('pop')});
+ msg(`Placed ${w}!`,1800);saveProg();checkDone()}
+function removeSlot(si){if(G.pl[si]==null||G.lock.has(si))return;snapshot();const w=G.pl[si];G.pl[si]=null;S.undo();closeSheet();G.selSlot=null;render();msg(`Took ${w} off the grid.`,2000);saveProg()}
+function flash(cells,cls){cells.forEach(([x,y])=>{const e=cellEl(x,y);e.classList.add(cls)});setTimeout(()=>cells.forEach(([x,y])=>cellEl(x,y).classList.remove(cls)),1600)}
+/* sheet: words that fit a slot / placing bar */
+function openSheet(si){const s=G.slots[si],L=letters(si);const pat=s.cells.map(([x,y])=>L[ck(x,y)]||'_').join(' ');
+ const fitW=G.words.filter(w=>w.length===s.len&&slotOf(w)<0&&fits(w,si));const cur=G.pl[si];
+ $('sheet').innerHTML=`<div class="top"><span class="t">${s.d==='A'?'Across':'Down'} · ${s.len} letters<span class="pat">${pat}</span></span><button class="icb" type="button" id="shX" aria-label="Close">✕</button></div>`+
+  (G.lock.has(si)?`<div class="none" style="color:#ffd36b">This is a hint word: ${cur}</div>`:
+  (fitW.length?`<div style="font-size:18px;margin:0 2px 8px">Words that fit here:</div><div class="chips">${fitW.map(w=>`<button class="chip" type="button" data-fw="${w}">${w}</button>`).join('')}</div>`:`<div class="none">No unused words fit here right now. Check the crossing letters.</div>`)+
+  (cur?`<button class="btn rm" type="button" id="shRm">✖ Take ${cur} off</button>`:''));
+ $('sheet').classList.add('on');document.body.classList.add('sheet');
+ $('shX').onclick=()=>{S.tap();closeSheet()};const rm=$('shRm');if(rm)rm.onclick=()=>removeSlot(si);
+ $('sheet').querySelectorAll('[data-fw]').forEach(b=>b.onclick=()=>place(b.dataset.fw,si));
+ // keep the chosen slot visible above the sheet
+ requestAnimationFrame(()=>{const r=s.cells.map(([x,y])=>cellEl(x,y).getBoundingClientRect());const bot=Math.max(...r.map(q=>q.bottom)),top=Math.min(...r.map(q=>q.top));const st=$('sheet').getBoundingClientRect().top;
+  if(bot>st-8)window.scrollBy({top:Math.min(bot-st+16,top-70),behavior:'smooth'})})}
+function showPickBar(){const w=G.pick;$('sheet').innerHTML=`<div class="top"><span class="t">Placing <b style="color:#ffd36b">${w}</b>: tap its first square.<br><span style="font-size:17px;color:#7ffcf0">Blue squares are ${w.length}-letter spots.</span></span><button class="icb" type="button" id="shX" aria-label="Cancel">✕</button></div>`;
+ $('sheet').classList.add('on');document.body.classList.add('sheet');$('shX').onclick=()=>{S.tap();G.pick=null;closeSheet();render();msg('')}}
+function closeSheet(clear=true){$('sheet').classList.remove('on');document.body.classList.remove('sheet');if(clear&&G){G.selSlot=null;if(state==='play')render()}}
+/* tools */
+$('bUndo').onclick=()=>{if(!G||G.won||!G.undo.length)return;G.pl=G.undo.pop();G.lock.forEach(si=>G.pl[si]=G.slots[si].w);G.pick=null;G.selSlot=null;closeSheet(false);S.undo();render();msg('Undone.',1500);saveProg()};
+$('bClear').onclick=()=>{if(!G||G.won)return;S.tap();$('ovClear').classList.add('on')};
+$('bClearYes').onclick=()=>{$('ovClear').classList.remove('on');snapshot();G.pl=G.pl.map((w,si)=>G.lock.has(si)?w:null);G.pick=null;G.selSlot=null;closeSheet(false);S.undo();render();msg('Puzzle cleared. Fresh start!',2500);saveProg()};
+$('bCheck').onclick=()=>{if(!G||G.won)return;G.checks++;const bad=[],good=[];G.slots.forEach((s,si)=>{if(!G.pl[si])return;(G.pl[si]===s.w?good:bad).push(si)});
+ if(!bad.length&&!good.length){msg('Place some words first, then Check.',2500);S.tap();return}
+ bad.forEach(si=>flash(G.slots[si].cells,'bad'));if(bad.length){S.no();msg(bad.length===1?'1 word is in the wrong spot (shown in red).':bad.length+' words are in the wrong spot (shown in red).',4000)}
+ else{good.forEach(si=>flash(G.slots[si].cells,'good'));S.place();msg('Everything so far is right! 👍',3000)}saveProg()};
+$('bHint').onclick=()=>{if(!G||G.won)return;const open=G.slots.map((s,si)=>si).filter(si=>!G.lock.has(si)&&G.pl[si]!==G.slots[si].w);if(!open.length)return;
+ // prefer a word that is not on the grid yet, then the longest
+ open.sort((a,b)=>(slotOf(G.slots[a].w)<0?0:1)-(slotOf(G.slots[b].w)<0?0:1)||G.slots[b].len-G.slots[a].len);const si=open[0],w=G.slots[si].w;
+ const o=slotOf(w);if(o>=0)G.pl[o]=null;G.pl[si]=w;G.lock.add(si);G.hints++;
+ // anything that now clashes comes off the grid
+ let moved=[];G.slots.forEach((s,sj)=>{if(sj===si||!G.pl[sj]||G.lock.has(sj))return;if(!fits(G.pl[sj],sj)){moved.push(G.pl[sj]);G.pl[sj]=null}});
+ G.undo=[];G.pick=null;G.selSlot=null;closeSheet(false);S.hint();render();flash(G.slots[si].cells,'good');
+ msg(`Hint: ${w} is in.`+(moved.length?` (${moved.join(', ')} came off.)`:''),3500);saveProg();checkDone()};
+$('bBack').onclick=()=>{S.tap();saveProg();showLevels(G.t)};
+/* timer */
+setInterval(()=>{if(state==='play'&&G&&!G.won&&!document.hidden){G.secs++;$('timer').textContent=fmtT(G.secs);if(G.secs%5===0)saveProg()}},1000);
+/* win */
+function starsFor(h){return h===0?3:h===1?2:1}
+function scoreFor(st,secs){return st*100+Math.max(0,300-Math.floor(secs/2))}
+function totalScore(){return Object.values(save.best).reduce((a,b)=>a+(+b.score||0),0)}
+function checkDone(){if(G.pl.some(w=>!w))return;if(G.pl.every((w,si)=>w===G.slots[si].w))win();else msg('Every spot is full, but some words are in the wrong place. Tap ✔️ Check.',5000)}
+function win(){G.won=true;const st=starsFor(G.hints),sc=scoreFor(st,G.secs),k=key(G.t,G.i),b=save.best[k];
+ const nb=!b||sc>b.score;if(nb)save.best[k]={stars:Math.max(st,b?b.stars:0),secs:b?Math.min(b.secs,G.secs):G.secs,score:sc};else{b.stars=Math.max(b.stars,st);b.secs=Math.min(b.secs,G.secs)}
+ delete save.prog[k];persist();
+ G.slots.forEach(s=>flash(s.cells,'good'));S.win();confetti();
+ $('wTitle').textContent=['','Solved!','Great job!','Perfect!'][st];$('wStars').innerHTML=stars(st);$('wTime').textContent='⏱ Time: '+fmtT(G.secs);$('wScore').textContent='Score: '+sc;
+ $('wBest').textContent=nb?'🏅 New best for this puzzle!':'Best: '+save.best[k].score;
+ const last=G.i>=PUZ[G.t].length-1;$('bNext').textContent=last?'🎉 Pick a theme':'Next puzzle ▶';
+ setTimeout(()=>{state='result';document.body.dataset.s='result';$('ovWin').classList.add('on')},900)}
+$('bNext').onclick=()=>{S.tap();$('ovWin').classList.remove('on');stopConfetti();if(G.i>=PUZ[G.t].length-1)showThemes();else openPuzzle(G.t,G.i+1)};
+$('bList').onclick=()=>{S.tap();$('ovWin').classList.remove('on');stopConfetti();showLevels(G.t)};
+/* confetti */
+let cf=null;function confetti(){const c=$('confetti'),x=c.getContext('2d');c.width=innerWidth*devicePixelRatio;c.height=innerHeight*devicePixelRatio;c.style.display='block';x.scale(devicePixelRatio,devicePixelRatio);
+ const cols=['#ff7a2f','#ffd36b','#7ffcf0','#e0439a','#22a06b','#fff'];const P=[];for(let i=0;i<140;i++)P.push({x:Math.random()*innerWidth,y:-20-Math.random()*innerHeight*.6,vx:(Math.random()-.5)*2,vy:2+Math.random()*3,r:Math.random()*6,s:5+Math.random()*7,c:cols[i%cols.length],vr:(Math.random()-.5)*.3});
+ const t0=performance.now();function f(t){x.clearRect(0,0,innerWidth,innerHeight);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(t-t0<4500)cf=requestAnimationFrame(f);else stopConfetti()}cf=requestAnimationFrame(f)}
+function stopConfetti(){cancelAnimationFrame(cf);$('confetti').style.display='none'}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.ov.on').forEach(o=>{if(o.id!=='ovWin')o.classList.remove('on')});if(G&&state==='play'){G.pick=null;closeSheet()}}});
+setState('title');
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js');
+window.__kfi={get G(){return G},PUZ,openPuzzle,place,totalScore,get save(){return save}};
+</script>
+<!--lb--><script>// LIVE config (Firestore). Public web keys only (safe to ship per Firebase docs). Used only for J Woo's Fishing Challenge + its five8nine copy.
+window.PALB_CONFIG = {
+  backend: 'firestore',
+  firestore: { projectId: 'peters-arcade-3ecb5', apiKey: 'AIzaSyDF1az3jKEZFcT7FP5j1FzjslDxMGL2VmE' }
+};
+</script><script>/* Peter's Arcade shared leaderboard (PALB) v1
+   One drop-in file. Usage in a game:
+     PALB.init({game:'j-woos-fishing-challenge', title:"J Woo's Fishing Challenge", order:'desc', unit:'pts', max:5000000});
+     ...at game over:  PALB.gameOver(score)            // or PALB.gameOver(score,{board:'18'})
+     title button:     added automatically inside the Share dock (#dock), shown only when the dock is (title screen).
+   Backend is chosen by window.PALB_CONFIG = {backend:'local'|'mock'|'firestore'|'supabase', firestore:{projectId,apiKey}, supabase:{url,key}}
+   Only PUBLIC client keys belong here (Firebase web apiKey / Supabase publishable key). Never a secret/service key. */
+(()=>{'use strict';
+const VER=1,LS=localStorage,NAMEK='pa_lb_name',PIDK='pa_lb_pid',QK='pa_lb_queue';
+const C=window.PALB_CONFIG=window.PALB_CONFIG||{};C.backend=C.backend||'local';
+let G=null,open=false,lastShown=null;
+const $=(t,a={},...k)=>{const e=document.createElement(t);for(const x in a){if(x==='style')e.style.cssText=a[x];else if(x.startsWith('on'))e.addEventListener(x.slice(2),a[x]);else e.setAttribute(x,a[x])}k.forEach(c=>e.append(c));return e};
+const jget=(k,d)=>{try{const v=JSON.parse(LS.getItem(k));return v==null?d:v}catch(e){return d}};const jset=(k,v)=>{try{LS.setItem(k,JSON.stringify(v))}catch(e){}};
+function pid(){let p=LS.getItem(PIDK);if(!p||!/^[a-z0-9]{10}$/.test(p)){p='';const a=new Uint8Array(10);(crypto||{}).getRandomValues?crypto.getRandomValues(a):a.forEach((_,i)=>a[i]=Math.random()*256);for(const b of a)p+='abcdefghijklmnopqrstuvwxyz0123456789'[b%36];LS.setItem(PIDK,p)}return p}
+
+/* ---------- name rules (same rules enforced server-side) ---------- */
+const BAD=['fuck','fuk','fck','shit','bitch','cunt','dick','cock','pussy','penis','vagina','whore','slut','nigg','nigga','fag','retard','rape','nazi','hitler','asshole','bastard','twat','wank','porn','sex','kkk','jizz','cum'];
+function cleanName(s){return String(s||'').normalize('NFKC').replace(/[^A-Za-z0-9 .'\-]/g,'').replace(/\s+/g,' ').trim().slice(0,12)}
+function badName(n){const z=n.toLowerCase().replace(/[0@4]/g,m=>({'0':'o','@':'a','4':'a'}[m])).replace(/[1!|]/g,'i').replace(/3/g,'e').replace(/[5$]/g,'s').replace(/7/g,'t').replace(/[^a-z]/g,'');return BAD.some(b=>z.includes(b))}
+function nameError(n){if(!n)return'Type a name (1–12 letters)';if(!/[A-Za-z0-9]/.test(n))return'Use some letters or numbers';if(badName(n))return'Please pick a friendlier name 🙂';return''}
+
+/* ---------- score helpers ---------- */
+const boardId=b=>G.game+(b&&b!=='main'?'__'+String(b).toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,12):'');
+const better=(a,b)=>G.order==='asc'?a<b:a>b;
+const keyOf=s=>G.order==='asc'?-s:s;
+function fmt(s){s=Math.round(s);if(G.unit==='time'){const m=Math.floor(s/60),x=s%60;return m+':'+String(x).padStart(2,'0')}const n=s.toLocaleString('en-US');return G.unit==='strokes'?n+(Math.abs(s)==1?' stroke':' strokes'):G.unit==='coins'?n+' 🪙':G.unit==='money'?'$'+n:G.unit==='level'?'Level '+n:G.unit==='stars'?n+' ★':G.unit==='wins'?n+(s==1?' win':' wins'):G.unit==='none'?n:n+' pts'}
+function sane(s){return Number.isFinite(s)&&Number.isInteger(Math.round(s))&&s>=G.min&&s<=G.max}
+
+/* ---------- backends: all return Promise; list() -> [{pid,name,score,ts}] best-first ---------- */
+const sortRows=r=>r.sort((a,b)=>G.order==='asc'?a.score-b.score||a.ts-b.ts:b.score-a.score||a.ts-b.ts);
+const Local={name:'local',
+  async submit(b,e){const k='pa_lb:'+b,r=jget(k,[]);const i=r.findIndex(x=>x.pid===e.pid&&x.name===e.name);if(i>=0){if(!better(e.score,r[i].score))return{kept:true};r[i]=e}else r.push(e);jset(k,sortRows(r).slice(0,50));return{ok:true}},
+  async list(b,n){return sortRows(jget('pa_lb:'+b,[])).slice(0,n)}};
+/* mock = a pretend shared server (one localStorage key for the whole origin, with latency) for testing the online path */
+const Mock={name:'mock',delay:()=>new Promise(r=>setTimeout(r,C.mockDelay??250)),
+  async submit(b,e){await this.delay();if(C.mockOffline)throw new Error('offline');const all=jget('pa_lb_mockdb',{}),r=all[b]||[];const i=r.findIndex(x=>x.pid===e.pid);if(i>=0){if(!better(e.score,r[i].score))return{kept:true};r[i]=e}else r.push(e);all[b]=r;jset('pa_lb_mockdb',all);return{ok:true}},
+  async list(b,n){await this.delay();if(C.mockOffline)throw new Error('offline');return sortRows((jget('pa_lb_mockdb',{})[b]||[]).slice()).slice(0,n)}};
+/* Firestore over REST (no SDK). Docs: boards/{board}/scores/{pid}. One doc per player per board; rules only let k go up. */
+const Firestore={name:'firestore',
+  base(){const f=C.firestore;return`https://firestore.googleapis.com/v1/projects/${f.projectId}/databases/(default)/documents`},
+  async submit(b,e){const f=C.firestore,doc=`projects/${f.projectId}/databases/(default)/documents/boards/${b}/scores/${e.pid}`;
+    const body={writes:[{update:{name:doc,fields:{name:{stringValue:e.name},score:{integerValue:String(e.score)},k:{integerValue:String(keyOf(e.score))},v:{integerValue:String(VER)}}},updateTransforms:[{fieldPath:'ts',setToServerValue:'REQUEST_TIME'}]}]};
+    const r=await fetch(`${this.base()}:commit?key=${encodeURIComponent(f.apiKey)}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(r.status===403)return{kept:true};if(!r.ok)throw new Error('firestore '+r.status);return{ok:true}},
+  async list(b,n){const f=C.firestore;const r=await fetch(`${this.base()}/boards/${b}:runQuery?key=${encodeURIComponent(f.apiKey)}`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({structuredQuery:{from:[{collectionId:'scores'}],orderBy:[{field:{fieldPath:'k'},direction:'DESCENDING'}],limit:n}})});
+    if(!r.ok)throw new Error('firestore '+r.status);const j=await r.json();
+    return j.filter(x=>x.document).map(x=>{const d=x.document,F=d.fields||{};return{pid:d.name.split('/').pop(),name:(F.name||{}).stringValue||'?',score:+((F.score||{}).integerValue||0),ts:Date.parse((F.ts||{}).timestampValue||d.updateTime)||0}})}};
+/* Supabase (PostgREST): insert via RPC submit_score (validates + keeps best), read via table select. */
+const Supabase={name:'supabase',
+  h(){const s=C.supabase;return{'apikey':s.key,'Content-Type':'application/json'}},
+  async submit(b,e){const s=C.supabase;const r=await fetch(`${s.url}/rest/v1/rpc/submit_score`,{method:'POST',headers:this.h(),body:JSON.stringify({p_board:b,p_pid:e.pid,p_name:e.name,p_score:e.score,p_k:keyOf(e.score)})});
+    if(!r.ok)throw new Error('supabase '+r.status);const j=await r.json();return j===false?{kept:true}:{ok:true}},
+  async list(b,n){const s=C.supabase;const r=await fetch(`${s.url}/rest/v1/scores?board=eq.${encodeURIComponent(b)}&select=pid,name,score,ts&order=k.desc,ts.asc&limit=${n}`,{headers:this.h()});
+    if(!r.ok)throw new Error('supabase '+r.status);return(await r.json()).map(x=>({pid:x.pid,name:x.name,score:+x.score,ts:Date.parse(x.ts)||0}))}};
+const REMOTE={mock:Mock,firestore:Firestore,supabase:Supabase}[C.backend]||null;
+const withTimeout=(p,ms=6000)=>Promise.race([p,new Promise((_,j)=>setTimeout(()=>j(new Error('timeout')),ms))]);
+
+/* queue: submissions that failed while offline are retried later */
+async function flush(){if(!REMOTE)return;const q=jget(QK,[]);if(!q.length)return;const keep=[];for(const it of q){try{await withTimeout(REMOTE.submit(it.b,it.e))}catch(e){keep.push(it)}}jset(QK,keep.slice(-30))}
+addEventListener('online',()=>flush());
+
+/* ---------- UI ---------- */
+const CSS=`#palbOv{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;background:rgba(5,5,20,.72);padding:calc(10px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(10px + env(safe-area-inset-left));box-sizing:border-box;touch-action:manipulation}
+#palbOv.on{display:flex}#palbCard{position:relative;box-sizing:border-box;width:min(340px,100%);max-height:100%;overflow:auto;background:#1b1340;color:#fff;border:3px solid #fff;border-radius:14px;box-shadow:0 0 0 4px #e0439a,0 10px 30px rgba(0,0,0,.6);padding:14px 14px 12px;font:15px/1.3 'Courier New',ui-monospace,monospace;text-align:center;-webkit-user-select:none;user-select:none}
+#palbCard h2{margin:0 34px 2px;font-size:22px;letter-spacing:1px;color:#ffe14a;text-shadow:2px 2px 0 #e0439a}#palbCard .sub{font-size:12px;opacity:.85;margin:0 30px 8px}
+#palbX{position:absolute;top:6px;right:6px;width:40px;height:40px;border-radius:20px;border:2px solid #fff;background:#e0439a;color:#fff;font:bold 18px system-ui,sans-serif;padding:0;cursor:pointer}
+#palbCard .big{font-size:26px;font-weight:bold;color:#7fffb0;margin:2px 0}#palbCard .note{font-size:13px;color:#ffe14a;min-height:17px;margin:4px 0}
+#palbCard input{box-sizing:border-box;width:100%;height:46px;border-radius:10px;border:3px solid #fff;background:#fff;color:#111;font:bold 18px 'Courier New',monospace;text-align:center;padding:0 8px;margin:6px 0 2px;-webkit-user-select:text;user-select:text;touch-action:manipulation}
+#palbCard .err{color:#ff9aa8;font-size:13px;min-height:17px}
+#palbCard .row2{display:flex;gap:8px;margin-top:8px}#palbCard .b{flex:1;box-sizing:border-box;min-height:46px;border-radius:12px;border:3px solid #fff;background:#e0439a;color:#fff;font:bold 16px system-ui,-apple-system,sans-serif;cursor:pointer;padding:0 8px}#palbCard .b.alt{background:#3a2f7a}#palbCard .b:disabled{opacity:.5}
+#palbList{list-style:none;margin:6px 0 0;padding:0;text-align:left}#palbList li{display:flex;gap:6px;align-items:center;height:28px;padding:0 8px;border-radius:6px;font-size:15px}#palbList li:nth-child(odd){background:rgba(255,255,255,.07)}
+#palbList li .r{width:26px;color:#ffe14a;font-weight:bold}#palbList li .n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#palbList li .s{font-weight:bold}#palbList li.me{background:#ffe14a!important;color:#1b1340}#palbList li.me .r{color:#e0439a}
+#palbList li.gap{height:14px;justify-content:center;opacity:.6;background:none!important}#palbCard .src{font-size:11px;opacity:.7;margin-top:6px}
+#palbTabs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:2px 0 4px}#palbTabs button{min-height:34px;border-radius:17px;border:2px solid #fff;background:#3a2f7a;color:#fff;font:bold 13px system-ui,sans-serif;padding:0 12px;cursor:pointer}#palbTabs button.on{background:#ffe14a;color:#1b1340}
+#lbBtn .l{display:inline}.dk.ic~#lbBtn{width:40px;padding:0;font-size:17px}.dk.ic~#lbBtn .l{display:none}`;
+let ov,card;
+function guard(el){['pointerdown','pointerup','pointermove','touchstart','touchmove','touchend','mousedown','mouseup','click','keydown','keyup','wheel','contextmenu'].forEach(ev=>el.addEventListener(ev,e=>e.stopPropagation()))}
+function tapBtn(b,fn){b.addEventListener('touchend',e=>{e.preventDefault();e.stopPropagation();if(!b.disabled)fn()},{passive:false});b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(!b.disabled)fn()});return b}
+function build(){if(ov)return;document.head.append($('style',{id:'palbCss'},CSS));
+  ov=$('div',{id:'palbOv',role:'dialog','aria-modal':'true','aria-label':'Leaderboard'});card=$('div',{id:'palbCard'});ov.append(card);document.body.append(ov);guard(ov);
+  /* swallow taps on the backdrop/card so they never reach the game, but NEVER preventDefault a tap on a text field:
+     that cancels focus on iOS Safari / Android Chrome, so the name box could not be typed in (fixed v1.1) */
+  const isField=el=>!!(el&&el.closest&&el.closest('input,textarea,select,[contenteditable]'));
+  ov.addEventListener('touchend',e=>{e.stopPropagation();if(isField(e.target)){const f=e.target.closest('input,textarea,select,[contenteditable]');if(document.activeElement!==f)try{f.focus()}catch(x){}return}if(e.cancelable)e.preventDefault()},{passive:false});
+  ov.addEventListener('click',e=>{if(isField(e.target))return;if(e.target===ov)close()});
+  ov.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+  ensureBtn()}
+/* title-screen button lives inside the Share dock (#dock) so the dock's own collision layout (and dock_test) covers it */
+function ensureBtn(n=0){const dock=document.getElementById('dock');if(!dock){if(n<20)setTimeout(()=>ensureBtn(n+1),250);return}
+  if(!document.getElementById('lbBtn')&&!dock.classList.contains('inl')&&G.button!==false){const b=$('button',{id:'lbBtn',class:'dk',type:'button','aria-label':'Leaderboard'},'🏆',$('span',{class:'l'},' Scores'));dock.append(b);
+    ['pointerdown','pointerup','touchstart','mousedown','mouseup','keydown'].forEach(ev=>b.addEventListener(ev,e=>e.stopPropagation()));tapBtn(b,()=>tapShow());try{window.__dock&&__dock.tick()}catch(e){}}}
+function chime(up){try{if(G.muted())return;const A=window.__palbAC||(window.__palbAC=new (window.AudioContext||window.webkitAudioContext)());const t=A.currentTime;(up?[523,659,784,1047]:[440,523]).forEach((f,i)=>{const o=A.createOscillator(),g=A.createGain();o.type='square';o.frequency.value=f;g.gain.setValueAtTime(.06,t+i*.09);g.gain.exponentialRampToValueAtTime(.001,t+i*.09+.12);o.connect(g).connect(A.destination);o.start(t+i*.09);o.stop(t+i*.09+.13)})}catch(e){}}
+function openOv(){if(!open){open=true;ov.classList.add('on');try{G.onOpen&&G.onOpen()}catch(e){}}}
+function close(){if(!open)return;open=false;ov.classList.remove('on');card.innerHTML='';try{G.onClose&&G.onClose()}catch(e){}}
+function head(t,sub){card.innerHTML='';card.append(tapBtn($('button',{id:'palbX',type:'button','aria-label':'Close'},'✕'),close),$('h2',{},t),$('div',{class:'sub'},sub))}
+const boardLabel=b=>{const x=(G.boards||[]).find(o=>o.id===b);return x?x.label:''};
+
+async function fetchBoard(b){const id=boardId(b);let rows=null,src='local';
+  if(REMOTE){try{await flush();rows=await withTimeout(REMOTE.list(id,G.top));src='online'}catch(e){rows=null}}
+  if(!rows){rows=await Local.list(id,G.top);src=REMOTE?'offline':'local'}return{rows,src}}
+function renderList(rows,meRank,meRow){const ul=$('ol',{id:'palbList'});const me=pid();
+  if(!rows.length)ul.append($('li',{class:'gap',style:'height:40px;opacity:.8'},'No scores yet — be the first!'));
+  rows.slice(0,10).forEach((r,i)=>ul.append($('li',{class:r.pid===me?'me':''},$('span',{class:'r'},String(i+1)),$('span',{class:'n'},r.name),$('span',{class:'s'},fmt(r.score)))));
+  if(meRow&&meRank>10){ul.append($('li',{class:'gap'},'· · ·'),$('li',{class:'me'},$('span',{class:'r'},meRank>99?'—':String(meRank)),$('span',{class:'n'},meRow.name),$('span',{class:'s'},fmt(meRow.score))))}
+  return ul}
+const SRC={online:'🌐 Live scores from everyone',offline:'📴 Offline — showing scores saved on this phone',local:'📱 Scores saved on this phone'};
+async function show(b,opts={}){build();b=b||lastShown||(G.boards&&G.boards[0]&&G.boards[0].id)||'main';lastShown=b;
+  head(opts.title||'🏆 TOP 10',G.title+(boardLabel(b)?' · '+boardLabel(b):''));
+  if(G.boards&&G.boards.length>1){const tabs=$('div',{id:'palbTabs'});G.boards.forEach(o=>tabs.append(tapBtn($('button',{type:'button',class:o.id===b?'on':''},o.label),()=>show(o.id))));card.append(tabs)}
+  if(opts.pre)card.append(opts.pre);
+  const wait=$('div',{class:'note'},'Loading…');card.append(wait);openOv();
+  const {rows,src}=await fetchBoard(b);if(!open||lastShown!==b)return;wait.remove();
+  const me=pid();let idx=rows.findIndex(r=>r.pid===me);let meRow=idx>=0?rows[idx]:null,meRank=idx+1;
+  if(opts.mine&&idx<0){meRow=opts.mine;meRank=99+1}
+  card.append(renderList(rows,meRank,meRow),$('div',{class:'src'},SRC[src]));const LB=localBest();if(LB!=null&&b===defBoard())card.append($('div',{class:'mybest',style:'margin-top:6px;font-size:14px;color:#7fffb0;font-weight:bold'},'Your best on this phone: '+fmt(LB)));
+  const row=$('div',{class:'row2'});row.append(tapBtn($('button',{type:'button',class:'b'},opts.done||'OK'),close));card.append(row);
+  return{rows,src,rank:idx>=0?idx+1:null}}
+
+/* Game over: ask for a name (remembered), save, then show the board with the player highlighted. */
+async function gameOver(score,o={}){if(!G)return;build();score=Math.round(+score);const b=o.board||(G.boards&&G.boards[0]&&G.boards[0].id)||'main';
+  if(!sane(score)||(G.order==='desc'&&score<=0&&!G.allowZero))return null;const pv=o.best!=null?Math.round(+o.best):score;if(!sane(pv))return null;
+  if(o.ask===false&&!LS.getItem(NAMEK))return null;
+  const pbK='pa_lb_pb:'+boardId(b),pb=jget(pbK,null),isPB=pb==null||better(score,pb);
+  lastShown=b;head(o.heading||G.overTitle||'GAME OVER',G.title+(boardLabel(b)?' · '+boardLabel(b):''));
+  card.append($('div',{},o.label||'Your score'),$('div',{class:'big'},fmt(score)),$('div',{class:'note'},o.best!=null?(o.label?'':'Best: '+fmt(pv)+(o.newBest?'  ★ New best! ★':'')):isPB?(pb==null?'':'★ New personal best! ★'):'Your best: '+fmt(pb)));
+  const inp=$('input',{type:'text',maxlength:'12',autocomplete:'nickname',autocapitalize:'words',spellcheck:'false',enterkeyhint:'done',placeholder:'Your name','aria-label':'Your name for the leaderboard'});inp.value=LS.getItem(NAMEK)||'';
+  const err=$('div',{class:'err'});const save=$('button',{type:'button',class:'b'},'🏆 Save score'),skip=$('button',{type:'button',class:'b alt'},'Skip');
+  card.append($('div',{style:'font-size:13px;margin-top:4px'},'Name for the leaderboard:'),inp,err);const row=$('div',{class:'row2'});row.append(skip,save);card.append(row);
+  openOv();if(!inp.value)setTimeout(()=>{try{inp.focus()}catch(e){}},50);
+  return new Promise(res=>{let busy=false;
+    tapBtn(skip,()=>{close();res({skipped:true})});
+    const go=async()=>{if(busy)return;const n=cleanName(inp.value);inp.value=n;const m=nameError(n);if(m){err.textContent=m;return}
+      busy=true;save.disabled=skip.disabled=true;LS.setItem(NAMEK,n);try{inp.blur()}catch(e){}
+      const sent=await post(pv,b,n),e={pid:pid(),name:n,score:pv};
+      const r=await show(b,{title:'🏆 TOP 10',mine:e});chime(r&&r.rank&&r.rank<=10);
+      if(r){const note=$('div',{class:'note'},r.rank?(r.rank===1?'🥇 You\u2019re #1!':'You\u2019re #'+r.rank+'!'):(REMOTE&&!sent?'Saved — it will post when you\u2019re back online.':'Keep playing to crack the Top 10!'));const lst=document.getElementById('palbList');lst&&lst.before(note)}
+      res({saved:true,sent,rank:r&&r.rank})};
+    tapBtn(save,go);inp.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();go()}})})}
+
+async function post(score,b,name){const e={pid:pid(),name,score,ts:Date.now()},id=boardId(b);await Local.submit(id,e);
+  const pbK='pa_lb_pb:'+id,pb=jget(pbK,null);if(pb==null||better(score,pb))jset(pbK,score);
+  if(REMOTE){try{await withTimeout(REMOTE.submit(id,e));const pk='pa_lb_posted:'+id,pp=jget(pk,null);if(pp==null||better(score,pp))jset(pk,score);return true}catch(x){const q=jget(QK,[]);q.push({b:id,e});jset(QK,q.slice(-30))}}return false}
+/* silent: post in the background once the player has a saved name (level-based games, so no popup after every level) */
+async function submitQuiet(score,o={}){if(!G)return;score=Math.round(+score);const b=o.board||(G.boards&&G.boards[0]&&G.boards[0].id)||'main';
+  if(!sane(score)||(G.order==='desc'&&score<=0&&!G.allowZero))return null;const n=LS.getItem(NAMEK);if(!n)return gameOver(score,o);
+  const pb=jget('pa_lb_pb:'+boardId(b),null);if(pb!=null&&!better(score,pb))return{kept:true};return{sent:await post(score,b,n),quiet:true}}
+/* game's own saved best (G.best expression) feeds the board */
+const defBoard=()=>(G.boards&&G.boards[0]&&G.boards[0].id)||'main';
+function localBest(){if(!G.bestF)return null;let v;try{v=Math.round(+G.bestF())}catch(e){return null}return sane(v)&&(v>0||G.allowZero)?v:null}
+function unposted(b){const B=localBest();if(B==null)return null;const P=jget('pa_lb_posted:'+boardId(b),null);if(!REMOTE){const L=jget('pa_lb_pb:'+boardId(b),null);return L==null||better(B,L)?B:null}return P==null||better(B,P)?B:null}
+async function syncBest(reason){if(!G||open)return;const b=defBoard(),B=unposted(b);if(B==null)return false;const n=LS.getItem(NAMEK);
+  if(n){await post(B,b,n);return true}
+  const AK='pa_lb_asked:'+boardId(b);if(reason==='load'&&jget(AK,null)===B)return false;jset(AK,B);
+  await gameOver(B,{board:b,best:B,label:'Your best on this phone',heading:'🏆 SHARE YOUR BEST'});return true}
+async function tapShow(){if(G&&G.bestF){const B=unposted(defBoard());if(B!=null&&!LS.getItem(NAMEK)){await syncBest('tap');return}if(B!=null)await post(B,defBoard(),LS.getItem(NAMEK))}return show()}
+async function bestOver(score){const b=defBoard(),B=localBest();if(B==null||unposted(b)==null)return;const n=LS.getItem(NAMEK);
+  if(!n)return gameOver(score,{board:b,best:B,newBest:B===score});const sent=await post(B,b,n);
+  const r=await show(b,{mine:{pid:pid(),name:n,score:B}});chime(r&&r.rank&&r.rank<=10);
+  if(r){const note=$('div',{class:'note'},'★ New best '+fmt(B)+' posted! '+(r.rank?'You\u2019re #'+r.rank+'!':sent?'':'(will post when online)'));const l=document.getElementById('palbList');l&&l.before(note)}}
+/* watch: no game-code edits needed. when/score/board are JS expressions evaluated in the game's global scope. */
+function watch(w){const F=s=>s==null?()=>undefined:typeof s==='function'?s:Function('try{return ('+s+')}catch(e){return undefined}');const when=F(w.when),sc=F(w.score),bd=F(w.board),ok=F(w.valid||'true');let was=false;
+  setInterval(()=>{let now=false;try{now=!!when()}catch(e){}if(now&&!was&&!open){const s=sc(),b=bd()||undefined;if(ok()!==false&&s!=null&&isFinite(s))setTimeout(()=>{w.best?bestOver(s):(w.silent?submitQuiet:gameOver)(s,{board:b})},w.delay??900)}was=now},150)}
+function init(o){G=Object.assign({order:'desc',unit:'pts',min:0,max:1e9,top:10,boards:null,muted:()=>{try{return typeof muted!=='undefined'&&!!muted}catch(e){return false}}},o);G.title=G.title||document.title;if(o.best)G.bestF=typeof o.best==='function'?o.best:Function('try{return ('+o.best+')}catch(e){return undefined}');
+  G.watchList=[].concat(o.watch||[]);if(document.readyState==='loading')addEventListener('DOMContentLoaded',build);else build();if(o.watch)[].concat(o.watch).forEach(watch);setTimeout(flush,1500);if(G.bestF)setTimeout(()=>syncBest('load'),G.bestDelay??1200);return api}
+/* postNow: post the current run's score right away (used by the sample "Unlock" screen), else just open the board */
+async function postNow(){if(!G)return;const F=x=>x==null?()=>undefined:typeof x==='function'?x:Function('try{return ('+x+')}catch(e){return undefined}');
+  for(const w of G.watchList||[]){if(F(w.valid||'true')()===false)continue;const s=F(w.score)();if(s==null||!isFinite(s)||!sane(Math.round(+s))||(G.order==='desc'&&+s<=0))continue;const b=F(w.board)()||undefined;
+    const r=await (w.best?bestOver(s):(w.silent?submitQuiet:gameOver)(s,{board:b}));if(!open)return show(b);return r}
+  return show()}
+const api={init,postNow,syncBest,localBest,gameOver,submitQuiet,watch,show,close,isOpen:()=>open,get backend(){return REMOTE?REMOTE.name:'local'},_t:{cleanName,nameError,fmt,boardId,pid,keyOf}};
+window.PALB=api})();
+</script><script>PALB.init({"game": "kellys-fill-it-in", "title": "Kelly's Fill-It-In", "order": "desc", "unit": "pts", "min": 0, "max": 100000, "boards": [{"id": "total", "label": "Total score"}], "watch": [{"when": "state==='result'&&!!G&&G.won", "score": "totalScore()", "board": "'total'", "silent": true, "delay": 1200}], "overTitle": "🎉 PUZZLE SOLVED!"})</script><!--/lb--><!--share--><style>#dock{position:fixed;z-index:60;display:none;gap:6px;top:0;left:0}#dock.inl{position:static;display:flex;justify-content:center;flex-wrap:wrap;margin:6px auto}
+.dk{box-sizing:border-box;height:34px;border-radius:17px;border:2px solid #fff;background:rgba(0,0,0,.66);color:#fff;font:bold 14px/30px system-ui,-apple-system,Segoe UI,sans-serif;padding:0 12px;margin:0;white-space:nowrap;touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer;flex:none}
+.dk.ic{width:40px;padding:0;font-size:17px}#dock.inl .dk{height:44px;line-height:40px;font-size:17px;padding:0 18px;border-radius:22px;border-width:3px}
+#dockHint{position:fixed;z-index:61;display:none;box-sizing:border-box;background:rgba(10,10,20,.92);color:#fff;border:2px solid #fff;border-radius:12px;font:13px/1.3 system-ui,-apple-system,sans-serif;padding:7px 36px 7px 10px;top:0;left:0}#dockHint.inl{position:relative;margin:4px auto;max-width:320px}
+#dockHintX{position:absolute;right:3px;top:50%;margin-top:-15px;width:30px;height:30px;border-radius:15px;border:0;background:#fff;color:#000;font:bold 15px sans-serif;padding:0;cursor:pointer}
+#shareToast{position:fixed;z-index:62;display:none;box-sizing:border-box;height:34px;border-radius:17px;border:2px solid #fff;background:#1f9d55;color:#fff;font:bold 13px/30px system-ui,sans-serif;text-align:center;white-space:nowrap;pointer-events:none;overflow:hidden}
+#inst,#ios,#ioshint{display:none!important}#dkProbe{position:fixed;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}.dk.smp{position:relative;opacity:.62;text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:#ff5050}.dk.smp:after{content:'';position:absolute;left:5px;right:5px;top:50%;height:3px;margin-top:-1px;background:#ff3b3b;border-radius:2px;transform:rotate(-16deg);pointer-events:none}#dockHint.smpc{padding:9px 38px 10px 11px;font-size:14px}#dockHint.smpc b{color:#ffd84a}#smpBuy{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:8px 0 0;height:34px;border-radius:17px;border:2px solid #fff;background:#e0439a;color:#fff;font:bold 14px/30px system-ui,-apple-system,sans-serif;padding:0 14px;cursor:pointer;touch-action:manipulation}#smpBuy.off{background:#444;opacity:.85;cursor:default}#smpBack{position:fixed;inset:0;z-index:59;display:none;background:rgba(0,0,0,.55)}#dock.inl .dk{background:#e0439a;font-size:18px;min-height:52px;border-radius:26px}</style><div id="dock" role="toolbar" aria-label="Share and install"><button id="shareBtn" class="dk" type="button" aria-label="Share this game">🔗 Share</button><button id="instBtn" class="dk" type="button" aria-label="Install this game as an app">📲 Install</button></div><div id="dockHint" role="note">📲 On iPhone/iPad: tap Share <b>⬆</b> then “Add to Home Screen”.<button id="dockHintX" type="button" aria-label="Dismiss tip">✕</button></div><div id="shareToast" role="status" aria-live="polite">Link copied!</div><div id="dkProbe"></div><div id="smpBack"></div><script>(()=>{const SH={"title": "Kelly's Fill-It-In", "text": "Play Kelly's Fill-It-In — a relaxing criss-cross word puzzle from Kelly's Arcade!", "url": "https://ploug76.github.io/kellys-fill-it-in/"},ALLOW=[],INLINE="#titleBtns",SHTXT="🔗 Share",SMP=window.__SAMPLE||null,PAYI=({"bhs": "https://ko-fi.com/bookofheavenstudios/commissions?commissionAlias=5df889530a", "589": "https://ko-fi.com/five8nine/commissions?commissionAlias=5c81b9373a"})[SMP]||'',PRICE="$1.99";const $=i=>document.getElementById(i);
+if(SMP){SH.url=SH.url+'?sample='+encodeURIComponent(SMP);const h0=$('dockHint');h0.classList.add('smpc');h0.setAttribute('role','dialog');h0.innerHTML='<b>Sample version</b> — install the full game on your phone for '+PRICE+'<button id="smpBuy" type="button"'+(PAYI?'':' class="off" aria-disabled="true"')+'>'+(PAYI?'💳 Buy '+PRICE:'Checkout coming soon')+'</button><button id="dockHintX" type="button" aria-label="Close">✕</button>'}
+if(!SMP)SH.url=SH.url+'?sample='+"589";const bk=$('smpBack'),dock=$('dock'),sb=$('shareBtn'),ib=$('instBtn'),hint=$('dockHint'),hx=$('dockHintX'),toastEl=$('shareToast'),probe=$('dkProbe');
+if(INLINE){const a=document.querySelector(INLINE);if(a){a.after(dock);dock.after(hint)}dock.classList.add('inl');hint.classList.add('inl')}
+const standalone=()=>matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||matchMedia('(display-mode: minimal-ui)').matches||navigator.standalone===true;
+const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+let dp=null,installed=false,hintOn=false,hintAuto=false,toastUntil=0,toastFor=null,force=false,last=null;const HK='pa_ioshint_seen';
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();if(SMP)return;dp=e;tick()});addEventListener('appinstalled',()=>{installed=true;dp=null;hintOn=false;tick()});
+const canInstall=()=>SMP?!standalone():(!standalone()&&!installed&&!!(dp||isIOS||force));
+function vis(){try{return !!(typeof state!=='undefined'&&state==='title')}catch(e){return false}}
+function safe(){const c=getComputedStyle(probe);return{t:parseFloat(c.paddingTop)||0,r:parseFloat(c.paddingRight)||0,b:parseFloat(c.paddingBottom)||0,l:parseFloat(c.paddingLeft)||0}}
+function tapRects(){const out=[];let T=b=>[b.x,b.y,b.w,b.h];try{if(typeof OXs!=='undefined'&&typeof SC!=='undefined')T=b=>[b.x*SC+OXs,b.y*SC+OYs,b.w*SC,b.h*SC]}catch(e){}
+ try{if(Array.isArray(menuBtns))menuBtns.forEach(b=>out.push(T(b).concat('canvas')))}catch(e){}
+ try{if(Array.isArray(BTN))BTN.forEach(b=>out.push(T(b).concat('canvas')))}catch(e){}
+ document.querySelectorAll('button,a[href],input,select,textarea,[onclick],[role=button]').forEach(e=>{if(dock.contains(e)||hint.contains(e))return;if(!e.getClientRects().length)return;const cs=getComputedStyle(e);if(cs.visibility==='hidden'||cs.display==='none'||+cs.opacity===0)return;const r=e.getBoundingClientRect();if(r.width<2||r.height<2)return;if(r.right<0||r.bottom<0||r.left>innerWidth||r.top>innerHeight)return;out.push([r.left,r.top,r.width,r.height,e.id||e.tagName])});return out}
+const hit=(a,b,p=4)=>a[0]<b[0]+b[2]+p&&b[0]<a[0]+a[2]+p&&a[1]<b[1]+b[3]+p&&b[1]<a[1]+a[3]+p;
+const inView=(a,s)=>a[0]>=s.l&&a[1]>=s.t&&a[0]+a[2]<=innerWidth-s.r&&a[1]+a[3]<=innerHeight-s.b;
+function covered(r){const pts=[[r[0]+3,r[1]+3],[r[0]+r[2]-3,r[1]+3],[r[0]+3,r[1]+r[3]-3],[r[0]+r[2]-3,r[1]+r[3]-3],[r[0]+r[2]/2,r[1]+r[3]/2]];for(const [x,y] of pts){const st=document.elementsFromPoint(x,y);const o=st.find(e=>!dock.contains(e)&&!hint.contains(e)&&e!==toastEl&&e!==probe&&e!==bk);if(o&&!(o.tagName==='CANVAS'||o===document.body||o===document.documentElement||ALLOW.includes(o.id)))return true}return false}
+function measure(el,w){el.style.width=w?w+'px':'';return el.offsetWidth}
+function layoutDock(){const s=safe(),R=tapRects(),inst=canInstall();ib.style.display=inst?'':'none';
+ for(const compact of [false,true]){sb.className='dk'+(compact?' ic':'');ib.className='dk'+(compact?' ic':'')+(SMP?' smp':'');sb.textContent=compact?'🔗':SHTXT;ib.textContent=compact?'📲':'📲 Install';
+  for(const v of ['t','b']){dock.style.display='flex';dock.style.left=(s.l+8)+'px';dock.style.top=v==='t'?(s.t+8)+'px':'';dock.style.bottom=v==='b'?(s.b+10)+'px':'';dock.style.right='';
+   const r=dock.getBoundingClientRect(),dr=[r.left,r.top,r.width,r.height];if(!inView(dr,s))continue;if(R.some(q=>hit(dr,q)))continue;if(covered(dr))continue;return dr}}
+ dock.style.display='none';return null}
+function layoutHint(dr){const s=safe(),R=tapRects();hint.style.display='block';const maxW=Math.min(340,innerWidth-s.l-s.r-16);
+ const cands=SMP?[]:[[s.l+8,null]];if(dr)cands.push([s.l+8,dr[1]+dr[3]+6]);if(SMP){cands.push([s.l+8,null]);for(let y=s.t+8;y<innerHeight-s.b-40;y+=12)cands.push([s.l+8,y]);for(let y=s.t+8;y<innerHeight-s.b-40;y+=12)cands.push([Math.max(s.l+8,innerWidth-s.r-8-maxW),y])}else cands.push([s.l+8,s.t+8]);const minW=SMP?226:200;
+ for(const [x0,y0] of cands)for(let w=maxW;w>=minW;w-=20){const x=SMP&&x0>s.l+8?innerWidth-s.r-8-w:x0;hint.style.width=w+'px';const h=hint.offsetHeight;const y=y0===null?innerHeight-s.b-10-h:y0;const hr=[x,y,w,h];if(!inView(hr,s))continue;if(dr&&hit(hr,dr,2))continue;if(R.some(q=>hit(hr,q)))continue;hint.style.left=x+'px';hint.style.top=y+'px';if(covered(hr))continue;return hr}
+ hint.style.display='none';return null}
+function tick(){const v=vis();if(INLINE){dock.style.display=v?'flex':'none';ib.style.display=canInstall()?'':'none';hint.style.display=v&&hintOn&&canInstall()?'block':'none';
+  if(Date.now()<toastUntil&&toastFor){toastFor.textContent='✓ Link copied!'}else if(toastFor){toastFor.textContent=toastFor.dataset.lbl||SHTXT;toastFor=null}last={dock:null,hint:null};return}
+ if(!v){dock.style.display='none';hint.style.display='none';toastEl.style.display='none';last={dock:null,hint:null};return}
+ if(!SMP&&isIOS&&canInstall()&&!hintAuto&&!localStorage.getItem(HK)){hintAuto=true;hintOn=true}
+ bk.style.display='none';const dr=layoutDock();let hr=null;if(hintOn&&canInstall()){hr=layoutHint(dr);if(!hr&&SMP){const s2=safe(),w=Math.min(340,innerWidth-s2.l-s2.r-16);Object.assign(hint.style,{display:'block',width:w+'px'});hint.style.left=Math.round((innerWidth-w)/2)+'px';hint.style.top=Math.round((innerHeight-hint.offsetHeight)/2)+'px';bk.style.display='block';const r=hint.getBoundingClientRect();hr=[r.left,r.top,r.width,r.height,'modal']}}else hint.style.display='none';
+ if(Date.now()<toastUntil&&dr){const r=sb.getBoundingClientRect();Object.assign(toastEl.style,{display:'block',left:r.left+'px',top:r.top+'px',width:Math.max(r.width,0)+'px'});toastEl.textContent=r.width<60?'✓':'Link copied!';sb.style.visibility='hidden'}else{toastEl.style.display='none';sb.style.visibility=''}
+ last={dock:dr,hint:hr}}
+function toast(el){toastUntil=Date.now()+1800;if(el&&el!==sb){toastFor=el;el.dataset.lbl=el.dataset.lbl||el.textContent;el.textContent='✓ Copied!';setTimeout(()=>{el.textContent=el.dataset.lbl},1800);return}if(INLINE)toastFor=sb;tick()}
+function legacyCopy(s){const a=document.createElement('textarea');a.value=s;a.setAttribute('readonly','');a.style.cssText='position:fixed;left:-999px;top:0;opacity:0';document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}a.remove();return ok}
+async function share(d,el){d=d||SH;if(navigator.share){try{await navigator.share(d);return 'shared'}catch(e){if(e&&e.name==='AbortError')return 'cancelled'}}
+ try{await navigator.clipboard.writeText(d.url);toast(el);return 'copied'}catch(e){if(legacyCopy(d.url)){toast(el);return 'copied'}return 'failed'}}
+async function install(){if(SMP){hintOn=!hintOn;tick();return}if(dp){const e=dp;dp=null;try{e.prompt();await e.userChoice}catch(_){}tick();return}hintOn=true;tick()}
+const guard=(b,fn)=>{['pointerdown','pointerup','touchstart','mousedown','mouseup'].forEach(ev=>b.addEventListener(ev,e=>e.stopPropagation()));b.addEventListener('touchend',e=>{e.stopPropagation();e.preventDefault();fn()},{passive:false});b.addEventListener('click',e=>{e.stopPropagation();e.preventDefault();fn()});b.addEventListener('keydown',e=>e.stopPropagation())};
+guard(sb,()=>share(SH,INLINE?sb:null));guard(ib,install);['pointerdown','touchstart','mousedown','click'].forEach(ev=>bk.addEventListener(ev,e=>{e.stopPropagation();e.preventDefault();if(ev==='click'||ev==='touchstart'){hintOn=false;tick()}},{passive:false}));guard(hx,()=>{hintOn=false;if(!SMP)localStorage.setItem(HK,'1');tick()});if(SMP){ib.setAttribute('aria-label','Install is not available in the sample. Tap for details');const bb=$('smpBuy');guard(bb,()=>{if(PAYI)location.href=PAYI})}[hint].forEach(h=>['pointerdown','touchstart','mousedown'].forEach(ev=>h.addEventListener(ev,e=>e.stopPropagation())));
+document.querySelectorAll('.tshare').forEach(b=>guard(b,()=>share({title:b.dataset.title,text:b.dataset.text,url:b.dataset.url},b)));
+setInterval(tick,250);addEventListener('resize',tick);tick();
+window.__share=window.__dock={share,install,vis,tick,tapRects,SH,get last(){return last},forceInstall(v=true){force=v;tick()},showHint(){hintOn=true;tick()},resetHint(){localStorage.removeItem(HK);hintAuto=false},canInstall,standalone,sample:SMP}})()</script><style>#smpLock{position:fixed;inset:0;z-index:75;display:none;align-items:center;justify-content:center;background:rgba(8,6,24,.86);padding:calc(12px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));box-sizing:border-box;touch-action:manipulation}
+#smpLock.on{display:flex}#smpLock .c{box-sizing:border-box;width:min(340px,100%);max-height:100%;overflow:auto;background:#1b1340;color:#fff;border:3px solid #fff;border-radius:16px;box-shadow:0 0 0 4px #ffcc2e,0 10px 30px rgba(0,0,0,.6);padding:16px 14px 14px;text-align:center;font:16px/1.35 system-ui,-apple-system,Segoe UI,sans-serif}
+#smpLock h2{margin:0 0 6px;font-size:23px;color:#ffe14a}#smpLock p{margin:6px 0 10px;font-size:15px}#smpLock .k{font-size:40px;line-height:1}
+#smpLock .b{display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:100%;min-height:48px;margin:8px 0 0;border-radius:12px;border:3px solid #fff;background:#3a2f7a;color:#fff;font:bold 17px system-ui,-apple-system,sans-serif;text-decoration:none;cursor:pointer;padding:0 10px}
+#smpLock .b.buy{background:#1f9d55;font-size:18px}#smpLock .b.off{background:#555;opacity:.75}#smpLock .lnk{display:block;margin-top:10px;color:#cfe0ff;font-size:14px}</style>
+<div id="smpLock" role="dialog" aria-modal="true" aria-label="Free sample complete"><div class="c"><div class="k">🔒</div><h2>Free sample complete!</h2><p id="smpLockTxt"></p><a id="smpLockBuy" class="b buy" target="_blank" rel="noopener">💳 Unlock the full game</a><button id="smpLockLb" class="b" type="button">🏆 Leaderboard &amp; my score</button><a id="smpLockMore" class="lnk">◀ More free samples</a></div></div>
+<script>(()=>{const SMP=window.__SAMPLE;if(!SMP)return;const C={"when": "state==='samplelock'", "secs": 1200, "label": "puzzles 1–2 of each theme"},PAY=({"bhs": "https://ko-fi.com/bookofheavenstudios/commissions?commissionAlias=5df889530a", "589": "https://ko-fi.com/five8nine/commissions?commissionAlias=5c81b9373a"})[SMP]||'',PRICE="$1.99",R=location.pathname.split('/')[1]||'x',TK='pa_sample_t:'+R;const $=i=>document.getElementById(i);
+const el=$('smpLock'),buy=$('smpLockBuy'),lb=$('smpLockLb'),more=$('smpLockMore');
+$('smpLockTxt').textContent='You played '+C.label+' of the free sample. Unlock the full game for '+PRICE+': every level, no time limit, and it installs on your phone like an app.';
+if(PAY){buy.href=PAY;buy.textContent='💳 Unlock the full game · '+PRICE}else{buy.classList.add('off');buy.textContent='Checkout coming soon';buy.removeAttribute('href')}
+more.href=SMP==='589'?'https://ploug76.github.io/589-studios/#games':'https://ploug76.github.io/book-of-heaven-studios/#games';
+const W=s=>{if(!s)return()=>false;const f=Function('try{return !!('+s+')}catch(e){return false}');return f};const when=W(C.when),onTitle=W("typeof state!=='undefined'&&state==='title'");
+let used=+localStorage.getItem(TK)||0,locked=false,last=performance.now(),saved=0;
+const inLb=t=>{const o=document.getElementById('palbOv');return !!(o&&t&&o.contains(t))};
+['pointerdown','pointerup','pointermove','touchstart','touchend','touchmove','mousedown','mouseup','click','wheel'].forEach(ev=>el.addEventListener(ev,e=>e.stopPropagation(),{passive:true}));
+function freeze(){try{window.requestAnimationFrame=()=>0}catch(e){}try{(window.__ACS||[]).forEach(a=>{try{a.suspend()}catch(e){}})}catch(e){}document.querySelectorAll('audio,video').forEach(m=>{try{m.pause()}catch(e){}})}
+function lock(){if(locked)return;locked=true;try{localStorage.setItem(TK,Math.max(used,C.secs))}catch(e){}freeze();el.classList.add('on');
+ ['keydown','keyup','keypress'].forEach(ev=>window.addEventListener(ev,e=>{if(!inLb(e.target)){e.stopImmediatePropagation();if(ev!=='keyup')e.preventDefault()}},true));
+ ['pointerdown','touchstart','mousedown'].forEach(ev=>window.addEventListener(ev,e=>{if(!el.contains(e.target)&&!inLb(e.target))e.stopImmediatePropagation()},true));
+ setInterval(()=>{try{(window.__ACS||[]).forEach(a=>{if(a.state==='running')a.suspend()})}catch(e){}},1000)}
+lb.addEventListener('click',e=>{e.preventDefault();try{if(window.PALB){(PALB.postNow?PALB.postNow():PALB.show())}}catch(x){}});if(!window.PALB&&!document.getElementById('palbOv'))setTimeout(()=>{if(!window.PALB)lb.style.display='none'},1500);
+setInterval(()=>{const now=performance.now(),dt=Math.min(1,(now-last)/1000);last=now;if(locked)return;if(!document.hidden&&!onTitle()){used+=dt;if(now-saved>3000){saved=now;try{localStorage.setItem(TK,used)}catch(e){}}}if(when()||used>=C.secs)lock()},250);
+window.__sampleLock={lock,get locked(){return locked},get used(){return used},C}})()</script><!--/share--></body></html>
