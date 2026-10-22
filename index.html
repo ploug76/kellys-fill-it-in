@@ -135,7 +135,7 @@ addEventListener('beforeinstallprompt',e=>{e.preventDefault();e.stopImmediatePro
 <div class="ov" id="ovHow"><div class="card"><h2>How to Play</h2>
  <p>Every word in the list fits in the grid exactly one way. There are no clues: the crossing letters must match.</p>
  <p><b>Way 1:</b> tap a word in the list, then tap its first square. The game figures out across or down.</p>
- <p><b>Way 2:</b> tap a square in the grid to see which words fit there, then tap one.</p>
+ <p><b>Way 2:</b> tap a square in the grid to see every word with that many letters, then pick the one you think goes there. Only 💡 Hint shows the answer.</p>
  <p>Tap the same square again to switch between across and down. Placed words are crossed off the list.</p>
  <p>💡 <b>Hint</b> fills in one word. ✔️ <b>Check</b> shows any word in the wrong spot. Solve with no hints for ★★★!</p>
  <div class="col"><button class="btn go" type="button" data-close>Got it!</button></div></div></div>
@@ -247,14 +247,14 @@ function removeSlot(si){if(G.pl[si]==null||G.lock.has(si))return;snapshot();cons
 function flash(cells,cls){cells.forEach(([x,y])=>{const e=cellEl(x,y);e.classList.add(cls)});setTimeout(()=>cells.forEach(([x,y])=>cellEl(x,y).classList.remove(cls)),1600)}
 /* sheet: words that fit a slot / placing bar */
 function openSheet(si){const s=G.slots[si],L=letters(si);const pat=s.cells.map(([x,y])=>L[ck(x,y)]||'_').join(' ');
- const fitW=G.words.filter(w=>w.length===s.len&&slotOf(w)<0&&fits(w,si));const cur=G.pl[si];
+ const fitW=G.words.filter(w=>w.length===s.len&&slotOf(w)<0);const cur=G.pl[si]; // every unused word of this length; never narrowed to the answer (only Hint reveals)
  $('sheet').innerHTML=`<div class="top"><span class="t">${s.d==='A'?'Across':'Down'} · ${s.len} letters<span class="pat">${pat}</span></span><button class="icb" type="button" id="shX" aria-label="Close">✕</button></div>`+
   (G.lock.has(si)?`<div class="none" style="color:#ffd36b">This is a hint word: ${cur}</div>`:
-  (fitW.length?`<div style="font-size:18px;margin:0 2px 8px">Words that fit here:</div><div class="chips">${fitW.map(w=>`<button class="chip" type="button" data-fw="${w}">${w}</button>`).join('')}</div>`:`<div class="none">No unused words fit here right now. Check the crossing letters.</div>`)+
+  (fitW.length?`<div style="font-size:18px;margin:0 2px 8px">All unused ${s.len}-letter words (you pick!):</div><div class="chips">${fitW.map(w=>`<button class="chip" type="button" data-fw="${w}">${w}</button>`).join('')}</div>`:`<div class="none">Every ${s.len}-letter word is already on the grid.</div>`)+
   (cur?`<button class="btn rm" type="button" id="shRm">✖ Take ${cur} off</button>`:''));
  $('sheet').classList.add('on');document.body.classList.add('sheet');
  $('shX').onclick=()=>{S.tap();closeSheet()};const rm=$('shRm');if(rm)rm.onclick=()=>removeSlot(si);
- $('sheet').querySelectorAll('[data-fw]').forEach(b=>b.onclick=()=>place(b.dataset.fw,si));
+ $('sheet').querySelectorAll('[data-fw]').forEach(b=>b.onclick=()=>{const w=b.dataset.fw;if(!fits(w,si)){S.no();flash(s.cells,'bad');msg(`${w} doesn't fit there: the crossing letters don't match.`,3500);return}place(w,si)});
  // keep the chosen slot visible above the sheet
  requestAnimationFrame(()=>{const r=s.cells.map(([x,y])=>cellEl(x,y).getBoundingClientRect());const bot=Math.max(...r.map(q=>q.bottom)),top=Math.min(...r.map(q=>q.top));const st=$('sheet').getBoundingClientRect().top;
   if(bot>st-8)window.scrollBy({top:Math.min(bot-st+16,top-70),behavior:'smooth'})})}
