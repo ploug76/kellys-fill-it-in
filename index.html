@@ -157,6 +157,7 @@ addEventListener('beforeinstallprompt',e=>{e.preventDefault();e.stopImmediatePro
  <p><b>Way 2:</b> tap a square in the grid to see every word with that many letters, then pick the one you think goes there. Only 💡 Hint shows the answer.</p>
  <p>Tap the same square again to switch between across and down. Placed words are crossed off the list.</p>
  <p>💡 <b>Hint</b> fills in one word. ✔️ <b>Check</b> shows any word in the wrong spot. Solve with no hints for ★★★!</p>
+ <p class="gp-help">🎮 <b>Controller</b> (USB or Bluetooth, on a computer or paired to your phone): stick or D-pad moves the gold box over words, squares and buttons; <b>A</b> taps it, <b>B</b> goes back, <b>X</b> Undo, <b>Y</b> Hint, <b>LB</b>/<b>RB</b> jump to the grid / the word list, <b>Select</b> sound.</p>
  <div class="col"><button class="btn go" type="button" data-close>Got it!</button></div></div></div>
 <div class="ov" id="ovClear"><div class="card"><h2>Clear the puzzle?</h2><p>This takes all your words off the grid (hint words stay).</p>
  <div class="col"><button class="btn pk" type="button" id="bClearYes">🧽 Yes, clear it</button><button class="btn" type="button" data-close>No, keep going</button></div></div></div>
@@ -614,4 +615,24 @@ window.__unlock={unlocked:un,sample:window.__SAMPLE||null,get badge(){return las
 #palbTabs button{min-height:48px!important;font-size:16px!important}
 #palbList li{min-height:30px;height:auto!important;font-size:16px!important}
 </style>
+<!-- gamepad:start -->
+<script src="gamepad.js?v=2"></script>
+<script>
+(function(){
+function jump(sel){var el=[].slice.call(document.querySelectorAll(sel)).filter(function(e){var r=e.getBoundingClientRect();return r.width>2&&r.height>2})[0];if(el)GamepadSupport.focus(el);}
+GamepadSupport.init({
+ keys:{back:function(p){if(p){var b=document.getElementById(state==='play'?'bMute2':'bMute');if(b)b.click()}},
+  x:function(p){if(p&&state==='play'&&!document.querySelector('.ov.on'))document.getElementById('bUndo').click()},
+  y:function(p){if(p&&state==='play'&&!document.querySelector('.ov.on'))document.getElementById('bHint').click()},
+  lb:function(p){if(p&&state==='play')jump('#grid .cell.on')},rb:function(p){if(p&&state==='play')jump('#sheet.on button:not(#shX),#words .chip')}},
+ focusSel:'button,#grid .cell.on',
+ ignoreSel:'#dock,.tb,#dockHint,#instBtn',
+ menu:function(){return true},
+ back:function(){if(document.querySelector('#palbOv.on,#smpLock.on'))return false;var o=document.querySelector('.ov.on [data-close]');if(o){o.click();return true}var sh=document.querySelector('#sheet.on #shX');if(sh){sh.click();return true}
+  var bb=[].slice.call(document.querySelectorAll('#bBack,section .hdr .icb')).filter(function(e){var r=e.getBoundingClientRect();return r.width>2&&getComputedStyle(e).visibility!=='hidden'&&e.offsetParent})[0];if(bb){bb.click();return true}return true},
+ hint:{text:'🎮 Controller: D-pad to pick · A to select · B back',when:function(){return state==='title'&&!document.querySelector('#palbOv.on,#smpLock.on,.ov.on')}}
+});
+})();
+</script>
+<!-- gamepad:end -->
 </body></html>
