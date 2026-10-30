@@ -115,7 +115,14 @@ const v=(q.get('sample')||'').replace(/[^a-z0-9-]/gi,'').slice(0,16);window.__UN
 if(un){if(code!==null&&!bad){const m=document.querySelector('link[rel=manifest]');if(m){fetch(m.href).then(r=>r.json()).then(j=>{j.start_url=location.origin+location.pathname+'?unlocked='+encodeURIComponent(code);j.scope=location.origin+location.pathname;(j.icons||[]).forEach(i=>{i.src=new URL(i.src,m.href).href});m.href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(j))}).catch(()=>{})}}return}
 document.querySelectorAll('link[rel=manifest]').forEach(l=>l.remove());
 if('serviceWorker' in navigator){try{navigator.serviceWorker.register=()=>new Promise(()=>{})}catch(e){}}
-addEventListener('beforeinstallprompt',e=>{e.preventDefault();e.stopImmediatePropagation()},true);window.__ACS=[];['AudioContext','webkitAudioContext'].forEach(n=>{const O=window[n];if(!O)return;const W=function(...a){const c=new O(...a);window.__ACS.push(c);return c};W.prototype=O.prototype;try{Object.setPrototypeOf(W,O)}catch(e){}window[n]=W})}catch(e){}})()</script><!--/sample--></head>
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();e.stopImmediatePropagation()},true);window.__ACS=[];['AudioContext','webkitAudioContext'].forEach(n=>{const O=window[n];if(!O)return;const W=function(...a){const c=new O(...a);window.__ACS.push(c);return c};W.prototype=O.prototype;try{Object.setPrototypeOf(W,O)}catch(e){}window[n]=W})}catch(e){}})()</script><!--/sample--><style id="ttlLand">/* Oct 30: landscape phones: Kelly on the left, Play buttons on the right (no scrolling to find them) */
+@media (orientation:landscape) and (max-height:540px){body[data-s=title] #sTitle{display:grid;max-width:900px;grid-template-columns:auto 1fr;grid-template-rows:auto;column-gap:22px;align-items:center;padding:8px 12px 12px}
+#sTitle>.port{grid-column:1;grid-row:1/span 6;width:150px;height:150px;margin:0}
+#sTitle>*:not(.port){grid-column:2}
+#sTitle h1{font-size:clamp(30px,6.4vh,46px)}#sTitle .tiles{display:none}#sTitle .sub{margin:6px 0 4px;font-size:18px}
+#sTitle #titleBtns{margin-top:6px;gap:8px;flex-direction:row;flex-wrap:wrap;justify-content:center}#sTitle #titleBtns .btn{width:auto;min-width:150px}#sTitle #titleBtns .btn.big{width:min(320px,100%)}
+#sTitle .smpnote,#sTitle .credit{margin-top:8px}}</style>
+</head>
 <body data-s="title">
 <section class="scr" id="sTitle">
  <img class="port" id="port" alt="Pixel-art portrait of Kelly" width="168" height="168">
